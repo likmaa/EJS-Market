@@ -1,0 +1,119 @@
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { Card, CardContent, CardFooter } from './ui/Card';
+import { Button } from './ui/Button';
+import { Badge } from './ui/Badge';
+import { formatPrice } from '@/lib/utils';
+import { useCart } from '@/hooks/useCart';
+
+interface ProductCardProps {
+  id: string;
+  sku: string;
+  name: string;
+  priceHT: number;
+  vatRate: number;
+  image?: string;
+  brand: string;
+  stock: number;
+  isActive: boolean;
+}
+
+export function ProductCard({
+  id,
+  sku,
+  name,
+  priceHT,
+  vatRate,
+  image,
+  brand,
+  stock,
+  isActive,
+}: ProductCardProps) {
+  const { addToCart } = useCart();
+  const priceTTC = priceHT * (1 + vatRate);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (stock > 0 && isActive) {
+      addToCart({
+        productId: id,
+        sku,
+        name,
+        priceHT,
+        vatRate,
+        image,
+      });
+    }
+  };
+
+  return (
+    <Link href={`/products/${id}`}>
+      <Card hover className="h-full flex flex-col">
+        <div className="relative w-full h-64 bg-gray-100">
+          {image ? (
+            <Image
+              src={image}
+              alt={name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <svg
+                className="w-24 h-24"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          )}
+          {stock === 0 && (
+            <div className="absolute top-2 right-2">
+              <Badge variant="error">Rupture de stock</Badge>
+            </div>
+          )}
+          {!isActive && (
+            <div className="absolute top-2 right-2">
+              <Badge variant="warning">Indisponible</Badge>
+            </div>
+          )}
+        </div>
+        
+        <CardContent className="flex-1 p-4">
+          <p className="text-sm text-gray-500 mb-1">{brand}</p>
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{name}</h3>
+          <p className="text-2xl font-bold text-blue-600 mb-2">
+            {formatPrice(priceTTC)}
+          </p>
+          <p className="text-sm text-gray-500">
+            HT: {formatPrice(priceHT)} (TVA incl.)
+          </p>
+        </CardContent>
+
+        <CardFooter className="p-4 pt-0">
+          <Button
+            variant="primary"
+            className="w-full"
+            onClick={handleAddToCart}
+            disabled={stock === 0 || !isActive}
+          >
+            {stock > 0 ? 'Ajouter au panier' : 'Rupture de stock'}
+          </Button>
+        </CardFooter>
+      </Card>
+    </Link>
+  );
+}
+

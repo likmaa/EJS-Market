@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  B2B_CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  role          UserRole  @default(CUSTOMER)
+  isEmailVerified Boolean @default(false)
+  vatNumber     String?   // Pour B2B (ex: FR12345678901)
+  addresses     Address[]
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "billing" ou "shipping"
+  firstName   String
+  lastName    String
+  company     String?
+  addressLine1 String
+  addressLine2 String?
+  city        String
+  postalCode  String
+  country     String   // Code ISO (FR, ES, DE, etc.)
+  phone       String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  sku           String      @unique
+  name          Json        // { fr: "iPhone 15", en: "iPhone 15", es: "..." }
+  description   Json?       // { fr: "...", en: "..." }
+  priceHT       Int         // En centimes (ex: 99900 = 999.00€)
+  defaultVATRate Float      // 0.20 pour 20%
+  weight        Float       // kg
+  dimensions    Json        // { length: 100, width: 50, height: 20 } en cm
+  stock         Int         @default(0)
+  brand         String
+  category      String      // "electronics", "garden", "photo", "mobility", "tools"
+  images        String[]    // URLs des images (CDN)
+  attributes    Json?       // Attributs spécifiques (JSONB)
+  isActive      Boolean     @default(true)
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([sku])
+  @@index([brand])
+  @@index([category])
+  @@index([isActive])
+  @@map("products")
+}
+
+model TaxRate {
+  id          String  @id @default(uuid())
+  countryCode String  @unique // "FR", "ES", "DE", "IT", "BE", etc.
+  rate        Float   // 0.20 pour 20%
+  reducedRate Float?  // 0.055 pour 5.5% (optionnel)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tax_rates")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  status          OrderStatus @default(PENDING)
+  totalHT         Int         // En centimes
+  totalTTC        Int         // En centimes
+  vatAmount       Int         // En centimes
+  shippingCost    Int         // En centimes
+  shippingAddress Json        // Adresse complète au moment de la commande
+  billingAddress  Json?       // Adresse de facturation
+  paymentIntentId String?     // Stripe PaymentIntent ID
+  paymentMethod   String?     // "card", "paypal", etc.
+  trackingNumber  String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([paymentIntentId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  priceHT   Int      // Prix au moment de la commande (en centimes)
+  vatRate   Float    // Taux TVA appliqué
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model ShippingZone {
+  id          String   @id @default(uuid())
+  name        String   // "Zone 1 - Europe de l'Ouest"
+  countries   String[] // ["FR", "BE", "NL", "DE"]
+  basePrice   Int      // Prix de base en centimes
+  pricePerKg  Int?     // Prix par kg supplémentaire (optionnel)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("shipping_zones")
+}
+
+model ShippingMethod {
+  id            String   @id @default(uuid())
+  name          String   // "Standard", "Express", "Spécial"
+  carrier       String?  // "DHL", "UPS", "DPD", etc.
+  maxWeight     Float?   // kg (null = pas de limite)
+  maxDimension  Float?   // cm (null = pas de limite)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("shipping_methods")
+}
+

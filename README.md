@@ -1,0 +1,52 @@
+# Electrónica & Jardín Store Europe
+
+Plateforme E-commerce multi-produits (High-tech + Jardinage) pour le marché européen.
+
+## 🚀 Stack Technique
+
+- **Frontend/Backend** : Next.js 14+ (App Router) + TypeScript
+- **Base de données** : PostgreSQL (Supabase) + Prisma ORM
+- **Authentification** : NextAuth.js
+- **Paiements** : Stripe
+- **Recherche** : Algolia
+- **Hébergement** : Vercel
+
+## 📦 Installation
+
+```bash
+# Installer les dépendances
+npm install
+
+# Configurer les variables d'environnement
+cp .env.example .env.local
+
+# Générer le client Prisma
+npm run db:generate
+
+# Lancer le serveur de développement
+npm run dev
+```
+
+## 🔧 Scripts Disponibles
+
+- `npm run dev` - Lancer le serveur de développement
+- `npm run build` - Build de production
+- `npm run start` - Lancer le serveur de production
+- `npm run lint` - Linter le code
+- `npm run db:generate` - Générer le client Prisma
+- `npm run db:push` - Pousser le schéma vers la DB
+- `npm run db:migrate` - Créer une migration
+- `npm run db:studio` - Ouvrir Prisma Studio
+
+## 📚 Documentation
+
+Voir `CAHIER_DES_CHARGES.md` pour les détails complets du projet.
+
+## 🔒 Sécurité
+
+- SSL/TLS automatique (Vercel)
+- Validation Zod sur tous les inputs
+- Protection CSRF/XSS intégrée
+- 3D Secure via Stripe (DSP2)
+- Backups automatiques (Supabase)
+
