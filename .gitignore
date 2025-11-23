@@ -45,3 +45,8 @@ next-env.d.ts
 *.swo
 *~
 
+# Assets (optionnel - décommentez si vous ne voulez pas versionner les assets)
+# /assets/img/*
+# /assets/video/*
+# /assets/other/*
+# !/assets/README.md

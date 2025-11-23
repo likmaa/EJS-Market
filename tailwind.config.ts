@@ -16,6 +16,7 @@ const config: Config = {
         'black-deep': '#111111',
         'gray-soft': '#F3F4F6',
         'green-garden': '#10B981',
+        'orange-submit': '#D96B4A',
       },
       fontFamily: {
         sans: ['var(--font-plus-jakarta)', 'sans-serif'],

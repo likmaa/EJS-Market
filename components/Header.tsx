@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { NewsBar } from './NewsBar';
 import { MegaMenu } from './MegaMenu';
@@ -17,21 +18,26 @@ export function Header() {
       <NewsBar />
 
       {/* Main Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-black-deep font-bold text-xl">eJS</span>
-            <span className="w-2 h-2 bg-violet-electric rounded-full"></span>
-            <span className="text-black-deep font-bold text-xl">MARKET</span>
+      <div className="max-w-[1800px] mx-auto px-12 lg:px-16 xl:px-20 2xl:px-24">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo - Left */}
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <Image
+              src="/logo.png"
+              alt="eJS MARKET"
+              width={140}
+              height={50}
+              className="h-12 w-auto"
+              priority
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6">
+          {/* Desktop Navigation - Center */}
+          <nav className="hidden lg:flex items-center gap-10 mx-12">
             {/* Explorer Button */}
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-              className="flex items-center gap-1 text-black-deep hover:text-violet-electric transition-colors font-medium"
+              className="flex items-center gap-1 text-black-deep hover:text-violet-electric transition-colors font-medium text-base"
             >
               Explorer
               <svg
@@ -44,24 +50,24 @@ export function Header() {
               </svg>
             </button>
 
-            <Link href="/products" className="text-black-deep hover:text-violet-electric transition-colors font-medium">
+            <Link href="/products" className="text-black-deep hover:text-violet-electric transition-colors font-medium text-base">
               Boutique
             </Link>
-            <Link href="/blog" className="text-black-deep hover:text-violet-electric transition-colors font-medium">
+            <Link href="/blog" className="text-black-deep hover:text-violet-electric transition-colors font-medium text-base">
               Blog
             </Link>
           </nav>
 
-          {/* Search Bar (Center) */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          {/* Search Bar - Center (Large) */}
+          <div className="hidden lg:flex flex-1 max-w-2xl mx-16">
             <div className="relative w-full">
               <input
                 type="text"
                 placeholder="Rechercher un produit, une référence..."
-                className="w-full px-4 py-2 pl-10 bg-gray-soft rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-violet-electric"
+                className="w-full px-6 py-3 pl-12 bg-gray-soft rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-violet-electric text-base"
               />
               <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -72,7 +78,7 @@ export function Header() {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {/* Cart */}
             <Link href="/cart" className="relative p-2 text-black-deep hover:text-violet-electric transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,15 +94,15 @@ export function Header() {
             {/* BE PRO Button */}
             <Link
               href="/be-pro"
-              className="hidden lg:block px-4 py-2 bg-violet-electric text-white rounded-lg hover:bg-violet-700 transition-colors font-medium text-sm"
+              className="hidden lg:block px-5 py-2.5 bg-black-deep text-white rounded-lg hover:bg-black transition-colors font-medium text-sm"
             >
-              BE PRO
+              Be Pro
             </Link>
 
             {/* Suivre Ma Commande */}
             <Link
               href="/tracking"
-              className="hidden lg:block px-4 py-2 border border-violet-electric text-violet-electric rounded-lg hover:bg-violet-50 transition-colors font-medium text-sm"
+              className="hidden lg:block px-5 py-2.5 border border-violet-electric text-violet-electric rounded-lg hover:bg-violet-50 transition-colors font-medium text-sm"
             >
               Suivre ma commande
             </Link>
@@ -124,10 +130,10 @@ export function Header() {
               <input
                 type="text"
                 placeholder="Rechercher un produit..."
-                className="w-full px-4 py-2 pl-10 bg-gray-soft rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-violet-electric"
+                className="w-full px-4 py-3 pl-12 bg-gray-soft rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-violet-electric"
               />
               <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -158,7 +164,7 @@ export function Header() {
                 Blog
               </Link>
               <Link href="/be-pro" className="text-black-deep hover:text-violet-electric transition-colors font-medium">
-                BE PRO
+                Be Pro
               </Link>
               <Link href="/tracking" className="text-black-deep hover:text-violet-electric transition-colors font-medium">
                 Suivre ma commande

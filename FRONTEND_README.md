@@ -1,7 +1,7 @@
 # 🎨 Documentation Frontend & UX/UI - eJS MARKET
 
 **Version** : 2.0 (Finale)  
-**Concept Visuel** : Minimalisme Tech (Inspiration : Awwwards Market)  
+**Concept Visuel** : Minimalisme Tech  
 **Style** : Premium Tech & Luxe
 
 ---
@@ -142,7 +142,7 @@ C'est ici que nous copions le style Awwwards pour rendre le site unique.
 
 Au lieu de forcer l'utilisateur à remonter tout en haut pour voir son panier.
 
-**Quoi** : Un bouton rectangulaire qui "flotte" en bas à droite de l'écran (ou fixe en bas sur mobile).
+**Quoi** : Un bouton rectangulaire qui "flotte" en bas au milieu de l'écran (ou fixe en bas sur mobile).
 
 **Visuel** :
 - Fond : Sombre (`#111111`) ou Violet (`#7C3AED`)
