@@ -1,4 +1,4 @@
-# Electrónica & Jardín Store Europe
+# EJS-Market
 
 Plateforme E-commerce multi-produits (High-tech + Jardinage) pour le marché européen.
 
@@ -37,10 +37,14 @@ npm run dev
 - `npm run db:push` - Pousser le schéma vers la DB
 - `npm run db:migrate` - Créer une migration
 - `npm run db:studio` - Ouvrir Prisma Studio
+- `npm run db:seed` - Seed les données initiales
 
 ## 📚 Documentation
 
-Voir `CAHIER_DES_CHARGES.md` pour les détails complets du projet.
+- `CAHIER_DES_CHARGES.md` - Cahier des charges complet
+- `GUIDE_DEMARRAGE.md` - Guide de démarrage
+- `FRONTEND_README.md` - Documentation frontend
+- `DEPLOIEMENT.md` - Guide de déploiement
 
 ## 🔒 Sécurité
 
@@ -50,3 +54,6 @@ Voir `CAHIER_DES_CHARGES.md` pour les détails complets du projet.
 - 3D Secure via Stripe (DSP2)
 - Backups automatiques (Supabase)
 
+## 📝 License
+
+Propriétaire - Tous droits réservés
