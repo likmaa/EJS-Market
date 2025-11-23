@@ -37,7 +37,7 @@ export default function Home() {
   const features = [
     {
       title: 'Livraison rapide',
-      description: 'Livraison en 24-48h dans toute l\'Europe',
+      description: "Livraison en 24-48h dans toute l'Europe",
       icon: '🚚',
     },
     {
