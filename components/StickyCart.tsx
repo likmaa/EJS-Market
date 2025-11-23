@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { formatPrice } from '@/lib/utils';
-import { Dialog } from '@headlessui/react';
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SegmentedCartButton } from './SegmentedCartButton';
@@ -15,17 +15,20 @@ export function StickyCart() {
   return (
     <>
       {/* Sticky Button - Desktop (Centré en bas avec bouton segmenté) */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 hidden md:block">
-        <button onClick={() => setIsOpen(true)}>
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden md:flex items-center justify-center">
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="focus:outline-none focus:ring-2 focus:ring-violet-electric focus:ring-offset-2 rounded-lg"
+        >
           <SegmentedCartButton />
         </button>
       </div>
 
       {/* Sticky Button - Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full cursor-pointer"
+          className="w-full focus:outline-none"
         >
           <SegmentedCartButton />
         </button>
@@ -36,12 +39,12 @@ export function StickyCart() {
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
         <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-          <Dialog.Panel className="w-screen max-w-md">
+          <DialogPanel className="w-screen max-w-md">
             <div className="flex h-full flex-col bg-white shadow-xl">
               <div className="flex items-center justify-between px-4 py-6 border-b border-gray-200">
-                <Dialog.Title className="text-lg font-semibold text-black-deep">
+                <DialogTitle className="text-lg font-semibold text-black-deep">
                   Panier
-                </Dialog.Title>
+                </DialogTitle>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-gray-400 hover:text-gray-500"
@@ -123,7 +126,7 @@ export function StickyCart() {
                 </div>
               )}
             </div>
-          </Dialog.Panel>
+          </DialogPanel>
         </div>
       </Dialog>
     </>

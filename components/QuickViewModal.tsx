@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog } from '@headlessui/react';
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from './ui/Button';
@@ -55,12 +55,12 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-4xl bg-white rounded-lg shadow-xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogPanel className="w-full max-w-4xl bg-white rounded-lg shadow-xl max-h-[90vh] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <Dialog.Title className="text-xl font-bold text-black-deep">
+            <DialogTitle className="text-xl font-bold text-black-deep">
               {product.name}
-            </Dialog.Title>
+            </DialogTitle>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-500 transition-colors"
@@ -203,7 +203,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               </div>
             </div>
           </div>
-        </Dialog.Panel>
+        </DialogPanel>
       </div>
     </Dialog>
   );

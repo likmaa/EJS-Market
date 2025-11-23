@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 
 export default function Home() {
-  const titles = ['eJS MARKET', 'Electrónica & Jardín'];
+  const titles = useMemo(() => ['eJS MARKET', 'Electrónica & Jardín'], []);
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -45,7 +45,11 @@ export default function Home() {
   }, [techImages.length, jardinImages.length]);
 
   useEffect(() => {
+    if (titles.length === 0) return;
+    
     const currentTitle = titles[currentTitleIndex];
+    if (!currentTitle) return;
+    
     const typingSpeed = isDeleting ? 50 : 100;
     const pauseTime = isDeleting ? 30 : 2000;
 
@@ -127,7 +131,7 @@ export default function Home() {
               </div>
             </div>
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-violet-electric mb-6 min-h-[1.2em]">
-              {displayedText}
+              {displayedText || 'eJS MARKET'}
               <span className="animate-pulse">|</span>
             </h1>
             <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
