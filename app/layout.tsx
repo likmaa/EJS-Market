@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { StickyCart } from "@/components/StickyCart";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+});
 
 export const metadata: Metadata = {
   title: "Electrónica & Jardín Store Europe",
@@ -18,10 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
+      <body className={`${plusJakarta.variable} font-sans`}>
         <Header />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen bg-off-white">{children}</main>
         <Footer />
+        <StickyCart />
       </body>
     </html>
   );

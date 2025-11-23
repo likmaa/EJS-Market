@@ -11,6 +11,14 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'off-white': '#FAFAFA',
+        'violet-electric': '#7C3AED',
+        'black-deep': '#111111',
+        'gray-soft': '#F3F4F6',
+        'green-garden': '#10B981',
+      },
+      fontFamily: {
+        sans: ['var(--font-plus-jakarta)', 'sans-serif'],
       },
     },
   },

@@ -3,145 +3,143 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 
 export default function Home() {
-  const categories = [
-    {
-      name: 'Électronique',
-      description: 'iPhone, PS5, MacBook et plus',
-      image: '📱',
-      href: '/products?category=electronics',
-      color: 'from-blue-500 to-blue-600',
-    },
-    {
-      name: 'Jardinage',
-      description: 'Robots tondeuses, outils',
-      image: '🌳',
-      href: '/products?category=garden',
-      color: 'from-green-500 to-green-600',
-    },
-    {
-      name: 'Photo & Vidéo',
-      description: 'Caméras, objectifs',
-      image: '📷',
-      href: '/products?category=photo',
-      color: 'from-purple-500 to-purple-600',
-    },
-    {
-      name: 'Mobilité',
-      description: 'Trottinettes, hoverboards',
-      image: '🛴',
-      href: '/products?category=mobility',
-      color: 'from-orange-500 to-orange-600',
-    },
-  ];
-
-  const features = [
-    {
-      title: 'Livraison rapide',
-      description: "Livraison en 24-48h dans toute l'Europe",
-      icon: '🚚',
-    },
-    {
-      title: 'Paiement sécurisé',
-      description: 'Paiement 100% sécurisé avec 3D Secure',
-      icon: '🔒',
-    },
-    {
-      title: 'Support client',
-      description: 'Service client disponible 7j/7',
-      icon: '💬',
-    },
-    {
-      title: 'Retours gratuits',
-      description: 'Retours gratuits sous 30 jours',
-      icon: '↩️',
-    },
-  ];
-
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-green-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Bienvenue sur E&J Store
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Votre destination pour l&apos;électronique et le jardinage en Europe.
-              Des produits de qualité, livrés rapidement.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/products">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                  Découvrir nos produits
-                </Button>
-              </Link>
-              <Link href="/categories">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto bg-white/10 border-white text-white hover:bg-white/20">
-                  Voir les catégories
-                </Button>
-              </Link>
-            </div>
+      <section className="relative bg-gradient-to-br from-violet-electric via-purple-700 to-green-600 text-white min-h-[600px] flex items-center">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6">
+            La Technologie au service de votre Maison & Jardin
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
+            Découvrez notre sélection premium d&apos;électronique et d&apos;équipements de jardinage connectés
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/products">
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                Découvrir nos produits
+              </Button>
+            </Link>
+            <Link href="/products?category=electronics">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto bg-white/10 border-white text-white hover:bg-white/20">
+                Explorer la Tech
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Catégories */}
-      <section className="py-16 bg-gray-50">
+      {/* Catégories (2 Colonnes Artistiques) */}
+      <section className="py-16 bg-off-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Explorez nos catégories
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Univers Tech */}
+            <Link href="/products?category=electronics">
+              <Card hover className="h-full min-h-[400px] relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-electric to-purple-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="relative h-full flex flex-col items-center justify-center p-12 text-center text-white">
+                  <div className="text-8xl mb-6">📱</div>
+                  <h2 className="text-4xl font-extrabold mb-4">Univers Tech</h2>
+                  <p className="text-xl mb-6 opacity-90">
+                    iPhone, MacBook, PS5, Caméras et plus
+                  </p>
+                  <Button variant="secondary" size="lg">
+                    Explorer
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Univers Jardin */}
+            <Link href="/products?category=garden">
+              <Card hover className="h-full min-h-[400px] relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-green-700 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="relative h-full flex flex-col items-center justify-center p-12 text-center text-white">
+                  <div className="text-8xl mb-6">🌳</div>
+                  <h2 className="text-4xl font-extrabold mb-4">Univers Jardin</h2>
+                  <p className="text-xl mb-6 opacity-90">
+                    Robots tondeuses, outils connectés, arrosage intelligent
+                  </p>
+                  <Button variant="secondary" size="lg">
+                    Explorer
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Trending (Produits Phares) */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl font-extrabold text-center mb-12 text-black-deep">
+            Produits Phares
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <Link key={category.name} href={category.href}>
-                <Card hover className="h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className={`text-6xl mb-4 bg-gradient-to-br ${category.color} bg-clip-text text-transparent`}>
-                      {category.image}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
-                    <p className="text-gray-600 text-sm">{category.description}</p>
-                  </CardContent>
-                </Card>
-              </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Placeholder pour 8 produits - sera remplacé par des vraies données */}
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <Card key={i} hover className="h-full">
+                <div className="h-48 bg-gray-soft rounded-t-lg"></div>
+                <CardContent className="p-4">
+                  <h3 className="font-bold text-black-deep mb-2">Produit {i}</h3>
+                  <p className="text-violet-electric font-bold text-lg">999,00 €</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/products">
+              <Button variant="outline" size="lg">
+                Voir tous les produits
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Témoignages */}
+      <section className="py-16 bg-gray-soft">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12 text-black-deep">
+            Ce que disent nos clients
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { name: 'Marie L.', rating: 5, text: 'Livraison rapide et produit de qualité. Je recommande !' },
+              { name: 'Jean D.', rating: 5, text: 'Excellent service client et robot tondeuse parfait.' },
+              { name: 'Sophie M.', rating: 5, text: 'Très satisfaite de mon iPhone 15 Pro, merci !' },
+            ].map((testimonial, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="flex mb-4">
+                    {[...Array(testimonial.rating)].map((_, j) => (
+                      <span key={j} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-700 mb-4 italic">&quot;{testimonial.text}&quot;</p>
+                  <p className="font-semibold text-black-deep">— {testimonial.name}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-16">
+      {/* Partenaires (Marques) */}
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Pourquoi choisir E&J Store ?
+          <h2 className="text-3xl font-bold text-center mb-12 text-black-deep">
+            Nos Partenaires
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature) => (
-              <div key={feature.title} className="text-center">
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
+            {['Apple', 'Sony', 'Husqvarna', 'STIHL'].map((brand) => (
+              <div key={brand} className="text-center">
+                <div className="text-4xl font-bold text-black-deep">{brand}</div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-green-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Prêt à commencer vos achats ?
-          </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Découvrez notre large sélection de produits de qualité
-          </p>
-          <Link href="/products">
-            <Button variant="secondary" size="lg">
-              Voir tous les produits
-            </Button>
-          </Link>
         </div>
       </section>
     </div>
