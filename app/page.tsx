@@ -67,7 +67,7 @@ export default function Home() {
               Bienvenue sur E&J Store
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Votre destination pour l'électronique et le jardinage en Europe.
+              Votre destination pour l&apos;électronique et le jardinage en Europe.
               Des produits de qualité, livrés rapidement.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

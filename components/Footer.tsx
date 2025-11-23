@@ -33,7 +33,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/help" className="hover:text-white transition-colors">
-                  Centre d'aide
+                  Centre d&apos;aide
                 </Link>
               </li>
               <li>
@@ -87,7 +87,7 @@ export function Footer() {
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                S'abonner
+                S&apos;abonner
               </button>
             </form>
           </div>
