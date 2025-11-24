@@ -82,6 +82,9 @@ export default function ProductDetailPage() {
                 fill
                 className="object-cover rounded-lg"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                priority={selectedImage === 0}
+                loading={selectedImage === 0 ? 'eager' : 'lazy'}
+                quality={85}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -116,6 +119,8 @@ export default function ProductDetailPage() {
                     fill
                     className="object-cover"
                     sizes="80px"
+                    loading="lazy"
+                    quality={75}
                   />
                 </button>
               ))}

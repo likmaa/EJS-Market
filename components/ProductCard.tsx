@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardFooter } from './ui/Card';
@@ -20,7 +21,7 @@ interface ProductCardProps {
   isActive: boolean;
 }
 
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
   id,
   sku,
   name,
@@ -34,7 +35,7 @@ export function ProductCard({
   const { addToCart } = useCart();
   const priceTTC = priceHT * (1 + vatRate);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -48,19 +49,21 @@ export function ProductCard({
         image,
       });
     }
-  };
+  }, [id, sku, name, priceHT, vatRate, image, stock, isActive, addToCart]);
 
   return (
     <Link href={`/products/${id}`}>
-      <Card hover className="h-full flex flex-col">
-        <div className="relative w-full h-64 bg-gray-100">
+      <Card hover className="h-full flex flex-col group">
+        <div className="relative w-full h-64 bg-gray-100 overflow-hidden">
           {image ? (
             <Image
               src={image}
               alt={name}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-125"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              loading="lazy"
+              quality={80}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -115,5 +118,5 @@ export function ProductCard({
       </Card>
     </Link>
   );
-}
+});
 

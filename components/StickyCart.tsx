@@ -35,12 +35,13 @@ export function StickyCart() {
       </div>
 
       {/* Cart Drawer */}
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      {isOpen && (
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
-        <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-          <DialogPanel className="w-screen max-w-md">
-            <div className="flex h-full flex-col bg-white shadow-xl">
+          <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <DialogPanel className="w-screen max-w-md transform transition-all">
+              <div className="flex h-full flex-col bg-white shadow-xl">
               <div className="flex items-center justify-between px-4 py-6 border-b border-gray-200">
                 <DialogTitle className="text-lg font-semibold text-black-deep">
                   Panier
@@ -72,6 +73,8 @@ export function StickyCart() {
                                 fill
                                 className="object-cover rounded-lg"
                                 sizes="80px"
+                                loading="lazy"
+                                quality={75}
                               />
                             </div>
                           )}
@@ -125,10 +128,11 @@ export function StickyCart() {
                   </Link>
                 </div>
               )}
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
+              </div>
+            </DialogPanel>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 }

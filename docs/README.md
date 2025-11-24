@@ -41,18 +41,18 @@ npm run dev
 
 ## 📚 Documentation
 
-Toute la documentation du projet est disponible dans le dossier [`docs/`](./docs/) :
+Toute la documentation est regroupée dans ce dossier :
 
-- [`docs/README.md`](./docs/README.md) - Vue d'ensemble du projet
-- [`docs/CAHIER_DES_CHARGES.md`](./docs/CAHIER_DES_CHARGES.md) - Cahier des charges complet
-- [`docs/GUIDE_DEMARRAGE.md`](./docs/GUIDE_DEMARRAGE.md) - Guide de démarrage
-- [`docs/FRONTEND_README.md`](./docs/FRONTEND_README.md) - Documentation frontend
-- [`docs/DEPLOIEMENT.md`](./docs/DEPLOIEMENT.md) - Guide de déploiement
-- [`docs/STACK_VALIDATION.md`](./docs/STACK_VALIDATION.md) - Validation de la stack technique
-- [`docs/OPTIMISATION_IMAGES.md`](./docs/OPTIMISATION_IMAGES.md) - Guide d'optimisation des images
-- [`docs/GITHUB_PUSH.md`](./docs/GITHUB_PUSH.md) - Instructions GitHub
-- [`docs/INSTRUCTIONS_GITHUB.md`](./docs/INSTRUCTIONS_GITHUB.md) - Instructions GitHub supplémentaires
-- [`docs/DIAGNOSTIC_CSS.md`](./docs/DIAGNOSTIC_CSS.md) - Diagnostic CSS
+- [`README.md`](./README.md) - Ce fichier (vue d'ensemble)
+- [`CAHIER_DES_CHARGES.md`](./CAHIER_DES_CHARGES.md) - Cahier des charges complet
+- [`GUIDE_DEMARRAGE.md`](./GUIDE_DEMARRAGE.md) - Guide de démarrage
+- [`FRONTEND_README.md`](./FRONTEND_README.md) - Documentation frontend
+- [`DEPLOIEMENT.md`](./DEPLOIEMENT.md) - Guide de déploiement
+- [`STACK_VALIDATION.md`](./STACK_VALIDATION.md) - Validation de la stack technique
+- [`OPTIMISATION_IMAGES.md`](./OPTIMISATION_IMAGES.md) - Guide d'optimisation des images
+- [`GITHUB_PUSH.md`](./GITHUB_PUSH.md) - Instructions GitHub
+- [`INSTRUCTIONS_GITHUB.md`](./INSTRUCTIONS_GITHUB.md) - Instructions GitHub supplémentaires
+- [`DIAGNOSTIC_CSS.md`](./DIAGNOSTIC_CSS.md) - Diagnostic CSS
 
 ## 🔒 Sécurité
 
@@ -65,4 +65,3 @@ Toute la documentation du projet est disponible dans le dossier [`docs/`](./docs
 ## 📝 License
 
 Propriétaire - Tous droits réservés
-

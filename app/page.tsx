@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import { formatPrice } from '@/lib/utils';
 
 export default function Home() {
   const titles = useMemo(() => ['eJS MARKET', 'Electrónica & Jardín'], []);
@@ -16,31 +18,97 @@ export default function Home() {
   const [currentTechIndex, setCurrentTechIndex] = useState(0);
   const [currentJardinIndex, setCurrentJardinIndex] = useState(0);
   
-  const techImages = [
-    { id: 1, url: '/img1.jpg', name: 'Produit Tech 1' },
-    { id: 2, url: '/img2.jpg', name: 'Produit Tech 2' },
-    { id: 3, url: '/img3.jpg', name: 'Produit Tech 3' },
-  ];
+  // Références pour les intervalles
+  const techIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const jardinIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  const jardinImages = [
-    { id: 1, url: '/jard1.jpg', name: 'Produit Jardin 1' },
-    { id: 2, url: '/jard2.jpg', name: 'Produit Jardin 2' },
-    { id: 3, url: '/jard3.jpg', name: 'Produit Jardin 3' },
-  ];
+  const techImages = useMemo(() => [
+    { 
+      id: 1, 
+      url: '/img1.jpg', 
+      name: 'iPhone 15 Pro Max',
+      price: 1399,
+      available: true
+    },
+    { 
+      id: 2, 
+      url: '/img2.jpg', 
+      name: 'MacBook Pro M3',
+      price: 2499,
+      available: true
+    },
+    { 
+      id: 3, 
+      url: '/img3.jpg', 
+      name: 'PlayStation 5',
+      price: 499,
+      available: false
+    },
+  ], []);
   
-  // Auto-play pour les carrousels
+  const jardinImages = useMemo(() => [
+    { 
+      id: 1, 
+      url: '/jard1.jpg', 
+      name: 'Robot Tondeuse Automower 430X',
+      price: 2499,
+      available: true
+    },
+    { 
+      id: 2, 
+      url: '/jard2.jpg', 
+      name: 'Tondeuse Robot Gardena',
+      price: 899,
+      available: true
+    },
+    { 
+      id: 3, 
+      url: '/jard3.jpg', 
+      name: 'Tronçonneuse STIHL',
+      price: 349,
+      available: true
+    },
+  ], []);
+
+  // Fonction pour obtenir l'index suivant dans un carrousel
+  const getNextIndex = useCallback((current: number, length: number) => {
+    return (current + 1) % length;
+  }, []);
+  
+  // Auto-play pour les carrousels - Avec intervalles différents pour éviter la synchronisation
   useEffect(() => {
-    const techInterval = setInterval(() => {
-      setCurrentTechIndex((prev) => (prev + 1) % techImages.length);
-    }, 4000); // Change d'image toutes les 4 secondes
+    // Nettoyer les intervalles précédents s'ils existent
+    if (techIntervalRef.current) {
+      clearInterval(techIntervalRef.current);
+    }
+    if (jardinIntervalRef.current) {
+      clearInterval(jardinIntervalRef.current);
+    }
     
-    const jardinInterval = setInterval(() => {
+    // Carrousel Tech - démarre immédiatement, change toutes les 8 secondes
+    techIntervalRef.current = setInterval(() => {
+      setCurrentTechIndex((prev) => (prev + 1) % techImages.length);
+    }, 8000); // 8 secondes
+    
+    // Carrousel Jardin - démarre avec un délai initial de 2 secondes, puis change toutes les 8.5 secondes
+    // Des intervalles différents (8s vs 8.5s) garantissent qu'ils ne se synchroniseront jamais
+    setTimeout(() => {
+      // Première transition après 2 secondes
       setCurrentJardinIndex((prev) => (prev + 1) % jardinImages.length);
-    }, 4000);
+      
+      // Puis continue toutes les 8.5 secondes (différent de 8 secondes)
+      jardinIntervalRef.current = setInterval(() => {
+        setCurrentJardinIndex((prev) => (prev + 1) % jardinImages.length);
+      }, 8500); // 8.5 secondes - différent de l'intervalle Tech
+    }, 2000); // Délai initial de 2 secondes
     
     return () => {
-      clearInterval(techInterval);
-      clearInterval(jardinInterval);
+      if (techIntervalRef.current) {
+        clearInterval(techIntervalRef.current);
+      }
+      if (jardinIntervalRef.current) {
+        clearInterval(jardinIntervalRef.current);
+      }
     };
   }, [techImages.length, jardinImages.length]);
 
@@ -147,31 +215,76 @@ export default function Home() {
             <div className="h-[700px] overflow-hidden relative group bg-white rounded-lg border border-gray-200 transition-all duration-300 hover:scale-[1.02] hover:border-violet-electric/30">
               <div className="relative h-full w-full">
                 <div className="overflow-hidden relative h-full w-full">
-                  {techImages.map((product, index) => (
-                    <div
-                      key={product.id}
-                      className={`absolute inset-0 transition-opacity duration-500 ${
-                        index === currentTechIndex ? 'opacity-100' : 'opacity-0'
-                      }`}
-                    >
-                      <div className="relative w-full h-full">
-                        <img
-                          src={product.url}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
+                  <div 
+                    className="flex h-full transition-transform duration-700 ease-in-out"
+                    style={{ transform: `translateX(-${currentTechIndex * 100}%)` }}
+                  >
+                    {techImages.map((product, index) => {
+                      const isVisible = index === currentTechIndex;
+                      const isNext = index === getNextIndex(currentTechIndex, techImages.length);
+                      // Charger seulement l'image visible et la suivante
+                      const shouldLoad = isVisible || isNext;
+                      
+                      return (
+                        <div
+                          key={product.id}
+                          className="min-w-full h-full relative flex-shrink-0"
+                        >
+                          <div className="relative w-full h-full bg-gray-200">
+                            {shouldLoad && (
+                              <Image
+                                src={product.url}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                priority={index === 0}
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                quality={85}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Informations produit en bas */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-white text-xl font-bold mb-2">
+                          {techImages[currentTechIndex]?.name}
+                        </h3>
+                        <div className="flex items-center gap-3 mb-3">
+                          <p className="text-white text-2xl font-bold">
+                            {techImages[currentTechIndex]?.price ? formatPrice(techImages[currentTechIndex].price * 100) : ''}
+                          </p>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            techImages[currentTechIndex]?.available 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-red-500 text-white'
+                          }`}>
+                            {techImages[currentTechIndex]?.available ? 'En stock' : 'Rupture de stock'}
+                          </span>
+                        </div>
+                        <Link 
+                          href={`/products/${techImages[currentTechIndex]?.id}`}
+                          className="inline-block text-sm text-violet-electric hover:underline font-normal"
+                        >
+                          Voir produit
+                        </Link>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  
                   {/* Indicateurs */}
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                  <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                     {techImages.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentTechIndex(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentTechIndex ? 'w-8 bg-violet-electric' : 'w-2 bg-white/50'
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          index === currentTechIndex ? 'w-8 bg-violet-electric' : 'w-2 bg-white/50 hover:bg-white/75'
                         }`}
                       />
                     ))}
@@ -184,31 +297,76 @@ export default function Home() {
             <div className="h-[700px] overflow-hidden relative group bg-white rounded-lg border border-gray-200 transition-all duration-300 hover:scale-[1.02] hover:border-green-garden/30">
               <div className="relative h-full w-full">
                 <div className="overflow-hidden relative h-full w-full">
-                  {jardinImages.map((product, index) => (
-                    <div
-                      key={product.id}
-                      className={`absolute inset-0 transition-opacity duration-500 ${
-                        index === currentJardinIndex ? 'opacity-100' : 'opacity-0'
-                      }`}
-                    >
-                      <div className="relative w-full h-full">
-                        <img
-                          src={product.url}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
+                  <div 
+                    className="flex h-full transition-transform duration-700 ease-in-out"
+                    style={{ transform: `translateX(-${currentJardinIndex * 100}%)` }}
+                  >
+                    {jardinImages.map((product, index) => {
+                      const isVisible = index === currentJardinIndex;
+                      const isNext = index === getNextIndex(currentJardinIndex, jardinImages.length);
+                      // Charger seulement l'image visible et la suivante
+                      const shouldLoad = isVisible || isNext;
+                      
+                      return (
+                        <div
+                          key={product.id}
+                          className="min-w-full h-full relative flex-shrink-0"
+                        >
+                          <div className="relative w-full h-full bg-gray-200">
+                            {shouldLoad && (
+                              <Image
+                                src={product.url}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                priority={index === 0}
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                quality={85}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Informations produit en bas */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-white text-xl font-bold mb-2">
+                          {jardinImages[currentJardinIndex]?.name}
+                        </h3>
+                        <div className="flex items-center gap-3 mb-3">
+                          <p className="text-white text-2xl font-bold">
+                            {jardinImages[currentJardinIndex]?.price ? formatPrice(jardinImages[currentJardinIndex].price * 100) : ''}
+                          </p>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            jardinImages[currentJardinIndex]?.available 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-red-500 text-white'
+                          }`}>
+                            {jardinImages[currentJardinIndex]?.available ? 'En stock' : 'Rupture de stock'}
+                          </span>
+                        </div>
+                        <Link 
+                          href={`/products/${jardinImages[currentJardinIndex]?.id}`}
+                          className="inline-block text-sm text-violet-electric hover:underline font-normal"
+                        >
+                          Voir produit
+                        </Link>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  
                   {/* Indicateurs */}
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                  <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                     {jardinImages.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentJardinIndex(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentJardinIndex ? 'w-8 bg-green-garden' : 'w-2 bg-white/50'
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          index === currentJardinIndex ? 'w-8 bg-green-garden' : 'w-2 bg-white/50 hover:bg-white/75'
                         }`}
                       />
                     ))}
@@ -224,41 +382,53 @@ export default function Home() {
       <section className="pt-8 pb-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-12 lg:px-16 xl:px-20 2xl:px-24">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Placeholder pour 8 produits - sera remplacé par des vraies données */}
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
-              const isTopRow = i <= 4;
-              const categoryLabel = isTopRow ? 'Univers Tech' : 'Univers Jardin';
-              const productName = `Produit ${i} - Nom du Produit Template`;
-              const creatorName = `Créateur ${i}`;
-              
+            {/* Produits avec images de la boutique */}
+            {[
+              { id: 1, name: 'iPhone 15 Pro', creator: 'Apple', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500', price: 1199 },
+              { id: 2, name: 'PlayStation 5', creator: 'Sony', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500', price: 499 },
+              { id: 3, name: 'Sony Alpha 7 IV', creator: 'Sony', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500', price: 2799 },
+              { id: 4, name: 'MacBook Pro M3', creator: 'Apple', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500', price: 1999 },
+              { id: 5, name: 'Robot Tondeuse Automower 430X', creator: 'Husqvarna', category: 'Univers Jardin', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=500', price: 2499 },
+              { id: 6, name: 'Tondeuse Robot Gardena', creator: 'Gardena', category: 'Univers Jardin', image: '/jard2.jpg', price: 899 },
+              { id: 7, name: 'Tronçonneuse STIHL', creator: 'STIHL', category: 'Univers Jardin', image: '/jard3.jpg', price: 349 },
+              { id: 8, name: 'Aspirateur Robot Roomba', creator: 'iRobot', category: 'Univers Jardin', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', price: 599 },
+            ].map((product) => {
               return (
-                <Card key={i} hover className="h-full bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shadow-sm">
-                  <div className="h-80 bg-gray-soft rounded-t-lg overflow-hidden flex-shrink-0">
-                    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
+                <Card key={product.id} hover className="h-full bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shadow-sm group">
+                  <div className="h-80 bg-gray-soft rounded-t-lg overflow-hidden flex-shrink-0 relative">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-125"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      loading="lazy"
+                      quality={80}
+                    />
                   </div>
                   <CardContent className="p-7 flex-1 flex flex-col justify-between min-h-[300px] bg-off-white">
                     {/* Section 1: Category + Title */}
                     <div className="border-b border-gray-200 pb-3 mb-3">
-                      <p className="text-xs text-gray-400 mb-2 font-normal">{categoryLabel}</p>
-                      <h3 className="font-bold text-black-deep text-xl leading-snug">{productName}</h3>
+                      <p className="text-xs text-gray-400 mb-2 font-normal">{product.category}</p>
+                      <h3 className="font-bold text-black-deep text-xl leading-snug">{product.name}</h3>
                     </div>
                     
                     {/* Section 2: By Creator + Price */}
                     <div className="border-b border-gray-200 pb-3 mb-3 flex items-baseline justify-between">
                       <div>
                         <span className="text-sm text-gray-500 font-normal">By </span>
-                        <span className="text-sm text-black-deep font-medium">{creatorName}</span>
+                        <span className="text-sm text-black-deep font-medium">{product.creator}</span>
                       </div>
                       <div className="text-right flex items-baseline">
                         <span className="text-sm text-black-deep font-normal">from </span>
-                        <span className="text-4xl font-bold text-black-deep ml-1">79</span>
-                        <span className="text-sm text-black-deep font-normal ml-1"> USD</span>
+                        <span className="text-4xl font-bold text-black-deep ml-1">{Math.floor(product.price)}</span>
+                        <span className="text-sm text-black-deep font-normal ml-1"> €</span>
                       </div>
                     </div>
                     
                     {/* Section 3: View Product */}
                     <div className="pt-1">
-                      <Link href={`/products/${i}`} className="text-sm text-violet-electric hover:underline font-normal">
+                      <Link href={`/products/${product.id}`} className="text-sm text-violet-electric hover:underline font-normal">
                         View Product
                       </Link>
                     </div>
@@ -268,10 +438,8 @@ export default function Home() {
             })}
           </div>
           <div className="text-center mt-8">
-            <Link href="/products">
-              <Button variant="outline" size="lg">
-                Voir tous les produits
-              </Button>
+            <Link href="/products" className="text-base text-violet-electric hover:underline font-bold">
+              Voir tous les produits
             </Link>
           </div>
         </div>

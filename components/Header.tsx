@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { NewsBar } from './NewsBar';
 import { MegaMenu } from './MegaMenu';
+import { LanguageSelector } from './LanguageSelector';
 import { useCart } from '@/hooks/useCart';
 
 export function Header() {
@@ -79,6 +80,7 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3 flex-shrink-0">
+
             {/* Cart */}
             <Link href="/cart" className="relative p-2 text-black-deep hover:text-violet-electric transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,6 +122,11 @@ export function Header() {
                 )}
               </svg>
             </button>
+          </div>
+
+          {/* Language Selector - Complètement à droite */}
+          <div className="hidden lg:flex items-center ml-4">
+            <LanguageSelector />
           </div>
         </div>
 
