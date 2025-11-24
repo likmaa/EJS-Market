@@ -41,3 +41,4 @@ Assurez-vous d'avoir les droits d'utilisation des logos pour votre site web comm
 
 Une fois les logos placés, ils s'afficheront automatiquement dans la section partenaires de la page d'accueil.
 
+

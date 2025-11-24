@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NewsBar } from './NewsBar';
 import { MegaMenu } from './MegaMenu';
 import { LanguageSelector } from './LanguageSelector';
@@ -13,8 +13,13 @@ export function Header() {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const handleExplorerClick = () => {
+    console.log('🔵 Explorer clicked, current state:', isMegaMenuOpen);
+    setIsMegaMenuOpen(!isMegaMenuOpen);
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-off-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-[100] bg-off-white border-b border-gray-200 shadow-sm relative">
       {/* News Bar */}
       <NewsBar />
 
@@ -37,8 +42,9 @@ export function Header() {
           <nav className="hidden lg:flex items-center gap-10 mx-12">
             {/* Explorer Button */}
             <button
-              onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-              className="flex items-center gap-1 text-black-deep hover:text-violet-electric transition-colors font-medium text-base"
+              type="button"
+              onClick={handleExplorerClick}
+              className="flex items-center gap-1 text-black-deep hover:text-violet-electric transition-colors font-medium text-base cursor-pointer"
             >
               Explorer
               <svg
@@ -125,7 +131,7 @@ export function Header() {
           </div>
 
           {/* Language Selector - Complètement à droite */}
-          <div className="hidden lg:flex items-center ml-4">
+          <div className="hidden lg:flex items-center ml-4 relative z-[110]">
             <LanguageSelector />
           </div>
         </div>
@@ -182,7 +188,12 @@ export function Header() {
       </div>
 
       {/* Mega Menu */}
-      {isMegaMenuOpen && <MegaMenu onClose={() => setIsMegaMenuOpen(false)} />}
+      {isMegaMenuOpen && (
+        <MegaMenu onClose={() => {
+          console.log('🔴 Closing MegaMenu');
+          setIsMegaMenuOpen(false);
+        }} />
+      )}
     </header>
   );
 }

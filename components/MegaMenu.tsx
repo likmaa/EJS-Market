@@ -11,10 +11,33 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Désactiver les clics pendant un court instant après l'ouverture
+    let isOpening = true;
+    const openingTimeout = setTimeout(() => {
+      isOpening = false;
+    }, 300);
+
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
+      // Ignorer les clics pendant l'ouverture
+      if (isOpening) {
+        return;
       }
+
+      const target = event.target as Node;
+      
+      // Ne pas fermer si le clic est dans le menu
+      if (menuRef.current && menuRef.current.contains(target)) {
+        return;
+      }
+      
+      // Ne pas fermer si le clic est dans le header (y compris le bouton Explorer)
+      const header = document.querySelector('header');
+      if (header && header.contains(target)) {
+        return;
+      }
+      
+      // Fermer si le clic est vraiment en dehors
+      onClose();
     };
 
     const handleEscape = (event: KeyboardEvent) => {
@@ -23,11 +46,17 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // Attendre un peu avant d'ajouter l'écouteur
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 300);
+
     document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      clearTimeout(openingTimeout);
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
@@ -70,8 +99,11 @@ export function MegaMenu({ onClose }: MegaMenuProps) {
   ];
 
   return (
-    <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
-      <div ref={menuRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div 
+      ref={menuRef}
+      className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-[60] w-full"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
           {/* 4 Colonnes de catégories */}
           {categories.map((category, index) => (

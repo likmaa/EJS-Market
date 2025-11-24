@@ -27,23 +27,40 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState<string>('fr');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   
   const isLight = variant === 'light';
 
+
   // Fermer le dropdown si on clique à l'extérieur
   useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+      const target = event.target as Node;
+      
+      // Ne pas fermer si le clic est dans le dropdown
+      if (dropdownRef.current && dropdownRef.current.contains(target)) {
+        return;
       }
+
+      // Ne pas fermer si le clic est dans le header (pour ne pas bloquer les autres boutons)
+      const header = document.querySelector('header');
+      if (header && header.contains(target)) {
+        return;
+      }
+
+      setIsOpen(false);
     }
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    // Utiliser un délai pour éviter les conflits
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 100);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -67,12 +84,19 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
     // window.location.reload(); // Temporaire, à remplacer par le router de next-intl
   };
 
+  console.log('LanguageSelector rendered, isOpen:', isOpen);
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[110] pointer-events-auto" ref={dropdownRef} style={{ pointerEvents: 'auto' }}>
       {/* Bouton sélecteur */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log('🟢 Language button clicked, current state:', isOpen);
+          setIsOpen(!isOpen);
+        }}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium cursor-pointer ${
           isLight 
             ? 'text-white hover:bg-white/10' 
             : 'text-black-deep hover:bg-gray-100'
@@ -96,7 +120,7 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[70]">
           {SUPPORTED_LANGUAGES.map((lang) => (
             <button
               key={lang}

@@ -111,6 +111,108 @@ export default function Home() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
   
+  // États pour les filtres
+  const [openDropdown, setOpenDropdown] = useState<'category' | 'univers' | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedUnivers, setSelectedUnivers] = useState<string[]>([]);
+  
+  // Options de filtres
+  const categoryOptions = [
+    { id: 'electronics', label: 'Électronique', icon: '📱' },
+    { id: 'garden', label: 'Jardinage', icon: '🌱' },
+    { id: 'gaming', label: 'Gaming', icon: '🎮' },
+    { id: 'photo', label: 'Photo & Vidéo', icon: '📷' },
+    { id: 'mobility', label: 'E-Mobilité', icon: '🛴' },
+    { id: 'tools', label: 'Outils', icon: '🔧' },
+  ];
+  
+  const universOptions = [
+    { id: 'tech', label: 'Tech', icon: '💻' },
+    { id: 'jardin', label: 'Jardin', icon: '🌿' },
+  ];
+  
+  // Calcul du nombre de filtres actifs
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (selectedCategories.length > 0) count += selectedCategories.length;
+    if (selectedUnivers.length > 0) count += selectedUnivers.length;
+    return count;
+  }, [selectedCategories, selectedUnivers]);
+  
+  // Références pour fermer les dropdowns au clic extérieur
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+  const universDropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Fermer les dropdowns au clic extérieur - UNIQUEMENT quand un dropdown est ouvert
+  useEffect(() => {
+    // Ne créer l'écouteur QUE si un dropdown est ouvert
+    if (!openDropdown) {
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      // Ne JAMAIS fermer si le clic est dans le header (pour ne pas bloquer Explorer, Language, etc.)
+      const header = document.querySelector('header');
+      if (header && header.contains(target)) {
+        return;
+      }
+      
+      // Ne pas fermer si le clic est dans les dropdowns de filtres
+      if (categoryDropdownRef.current && categoryDropdownRef.current.contains(target)) {
+        return;
+      }
+      if (universDropdownRef.current && universDropdownRef.current.contains(target)) {
+        return;
+      }
+      
+      // Fermer si le clic est vraiment en dehors
+      setOpenDropdown(null);
+    };
+    
+    // Utiliser un délai pour éviter les conflits
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 100);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openDropdown]);
+  
+  // Fonctions de gestion des filtres
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+  
+  const toggleUnivers = (universId: string) => {
+    setSelectedUnivers((prev) =>
+      prev.includes(universId)
+        ? prev.filter((id) => id !== universId)
+        : [...prev, universId]
+    );
+  };
+  
+  const resetFilters = () => {
+    setSelectedCategories([]);
+    setSelectedUnivers([]);
+    setOpenDropdown(null);
+  };
+  
+  const removeFilter = (type: 'category' | 'univers', id?: string) => {
+    if (type === 'category' && id) {
+      setSelectedCategories((prev) => prev.filter((catId) => catId !== id));
+    } else if (type === 'univers' && id) {
+      setSelectedUnivers((prev) => prev.filter((universId) => universId !== id));
+    }
+  };
+  
   // États pour les carrousels
   const [currentTechIndex, setCurrentTechIndex] = useState(0);
   const [currentJardinIndex, setCurrentJardinIndex] = useState(0);
@@ -361,25 +463,204 @@ export default function Home() {
       <section className="relative bg-white pt-4 pb-8">
         <div className="max-w-[1600px] mx-auto px-12 lg:px-16 xl:px-20 2xl:px-24">
           {/* 1. Barre de filtres en haut */}
-          <div className="bg-gray-soft rounded-lg px-6 py-4 mb-8 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button className="px-4 py-2 bg-white text-black-deep rounded-lg font-medium text-sm">
-                Category
-              </button>
-              <button className="px-4 py-2 bg-transparent text-gray-600 rounded-lg font-medium text-sm hover:bg-white/50">
-                Platform
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center">
-                <span className="text-black-deep text-sm font-medium">0</span>
+          <div className="bg-gray-soft rounded-xl px-6 py-4 mb-8 shadow-sm">
+            <div className="flex flex-col gap-4">
+              {/* Ligne principale avec boutons de filtres */}
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3 flex-wrap">
+                  {/* Dropdown Category */}
+                  <div className="relative" ref={categoryDropdownRef}>
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === 'category' ? null : 'category')}
+                      className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 ${
+                        openDropdown === 'category' || selectedCategories.length > 0
+                          ? 'bg-violet-electric text-white shadow-md hover:bg-violet-700'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-violet-electric'
+                      }`}
+                    >
+                      Category
+                      {selectedCategories.length > 0 && (
+                        <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
+                          {selectedCategories.length}
+                        </span>
+                      )}
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-200 ${openDropdown === 'category' ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {openDropdown === 'category' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-50 min-w-[240px]"
+                        >
+                          <div className="space-y-1">
+                            {categoryOptions.map((option) => (
+                              <button
+                                key={option.id}
+                                onClick={() => toggleCategory(option.id)}
+                                className={`w-full px-4 py-2.5 rounded-lg text-left text-sm transition-all duration-200 flex items-center gap-3 ${
+                                  selectedCategories.includes(option.id)
+                                    ? 'bg-violet-electric/10 text-violet-electric font-medium'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span className="text-lg">{option.icon}</span>
+                                <span className="flex-1">{option.label}</span>
+                                {selectedCategories.includes(option.id) && (
+                                  <svg className="w-4 h-4 text-violet-electric" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Dropdown Univers */}
+                  <div className="relative" ref={universDropdownRef}>
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === 'univers' ? null : 'univers')}
+                      className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 ${
+                        openDropdown === 'univers' || selectedUnivers.length > 0
+                          ? 'bg-violet-electric text-white shadow-md hover:bg-violet-700'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-violet-electric'
+                      }`}
+                    >
+                      Univers
+                      {selectedUnivers.length > 0 && (
+                        <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
+                          {selectedUnivers.length}
+                        </span>
+                      )}
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-200 ${openDropdown === 'univers' ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {openDropdown === 'univers' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-50 min-w-[200px]"
+                        >
+                          <div className="space-y-1">
+                            {universOptions.map((option) => (
+                              <button
+                                key={option.id}
+                                onClick={() => toggleUnivers(option.id)}
+                                className={`w-full px-4 py-2.5 rounded-lg text-left text-sm transition-all duration-200 flex items-center gap-3 ${
+                                  selectedUnivers.includes(option.id)
+                                    ? 'bg-violet-electric/10 text-violet-electric font-medium'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span className="text-lg">{option.icon}</span>
+                                <span className="flex-1">{option.label}</span>
+                                {selectedUnivers.includes(option.id) && (
+                                  <svg className="w-4 h-4 text-violet-electric" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  {activeFiltersCount > 0 && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-8 h-8 bg-violet-electric rounded-full flex items-center justify-center shadow-md"
+                    >
+                      <span className="text-white text-sm font-bold">{activeFiltersCount}</span>
+                    </motion.div>
+                  )}
+                  <button
+                    onClick={resetFilters}
+                    className="px-4 py-2.5 bg-transparent text-gray-600 rounded-lg font-medium text-sm hover:bg-white/80 hover:text-violet-electric transition-all duration-200 flex items-center gap-2"
+                  >
+                    Reset filters
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <button className="px-4 py-2 bg-transparent text-gray-600 rounded-lg font-medium text-sm hover:bg-white/50 flex items-center gap-2">
-                Reset filters
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </button>
+
+              {/* Tags des filtres actifs */}
+              {(selectedCategories.length > 0 || selectedUnivers.length > 0) && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-300"
+                >
+                  {selectedCategories.map((catId) => {
+                    const category = categoryOptions.find((c) => c.id === catId);
+                    return category ? (
+                      <motion.button
+                        key={catId}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        onClick={() => removeFilter('category', catId)}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-violet-electric/10 text-violet-electric rounded-lg text-sm font-medium hover:bg-violet-electric/20 transition-colors"
+                      >
+                        <span>{category.icon}</span>
+                        <span>{category.label}</span>
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </motion.button>
+                    ) : null;
+                  })}
+                  {selectedUnivers.map((universId) => {
+                    const univers = universOptions.find((u) => u.id === universId);
+                    return univers ? (
+                      <motion.button
+                        key={universId}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        onClick={() => removeFilter('univers', universId)}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-violet-electric/10 text-violet-electric rounded-lg text-sm font-medium hover:bg-violet-electric/20 transition-colors"
+                      >
+                        <span>{univers.icon}</span>
+                        <span>{univers.label}</span>
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </motion.button>
+                    ) : null;
+                  })}
+                </motion.div>
+              )}
             </div>
           </div>
 
