@@ -44,7 +44,10 @@ export function Header() {
             <button
               type="button"
               onClick={handleExplorerClick}
-              className="flex items-center gap-1 text-black-deep hover:text-violet-electric transition-colors font-medium text-base cursor-pointer"
+              className="flex items-center gap-1 text-black-deep hover:text-violet-electric transition-colors font-medium text-base cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-electric focus:ring-offset-2 rounded"
+              aria-label="Ouvrir le menu Explorer"
+              aria-expanded={isMegaMenuOpen}
+              aria-haspopup="true"
             >
               Explorer
               <svg
@@ -52,6 +55,7 @@ export function Header() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -69,9 +73,10 @@ export function Header() {
           <div className="hidden lg:flex flex-1 max-w-2xl mx-16">
             <div className="relative w-full">
               <input
-                type="text"
+                type="search"
                 placeholder="Rechercher un produit, une référence..."
                 className="w-full px-6 py-3 pl-12 bg-gray-soft rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-violet-electric text-base"
+                aria-label="Rechercher un produit"
               />
               <svg
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
@@ -88,12 +93,16 @@ export function Header() {
           <div className="flex items-center gap-3 flex-shrink-0">
 
             {/* Cart */}
-            <Link href="/cart" className="relative p-2 text-black-deep hover:text-violet-electric transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link 
+              href="/cart" 
+              className="relative p-2 text-black-deep hover:text-violet-electric transition-colors focus:outline-none focus:ring-2 focus:ring-violet-electric focus:ring-offset-2 rounded"
+              aria-label={`Panier, ${itemsCount} ${itemsCount === 1 ? 'article' : 'articles'}`}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               {itemsCount > 0 && (
-                <span className="absolute top-0 right-0 bg-violet-electric text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center font-bold px-1.5 border-2 border-white shadow-md">
+                <span className="absolute top-0 right-0 bg-violet-electric text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center font-bold px-1.5 border-2 border-white shadow-md" aria-hidden="true">
                   {itemsCount > 99 ? '99+' : itemsCount}
                 </span>
               )}
@@ -118,9 +127,12 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-black-deep"
+              className="lg:hidden p-2 text-black-deep focus:outline-none focus:ring-2 focus:ring-violet-electric focus:ring-offset-2 rounded"
+              aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 {isMobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -159,8 +171,8 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden pb-4 border-t border-gray-200 pt-4">
-            <nav className="flex flex-col gap-4">
+          <div id="mobile-menu" className="lg:hidden pb-4 border-t border-gray-200 pt-4" role="menu">
+            <nav className="flex flex-col gap-4" aria-label="Navigation mobile">
               <button
                 onClick={() => {
                   setIsMegaMenuOpen(!isMegaMenuOpen);

@@ -8,6 +8,8 @@ import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
+import { WishlistButton } from './WishlistButton';
+import { ComparisonButton } from './ComparisonButton';
 
 interface ProductCardProps {
   id: string;
@@ -92,6 +94,29 @@ export const ProductCard = memo(function ProductCard({
               <Badge variant="warning">Indisponible</Badge>
             </div>
           )}
+          {/* Action buttons */}
+          <div className="absolute top-2 left-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <WishlistButton
+              productId={id}
+              sku={sku}
+              name={name}
+              priceHT={priceHT}
+              vatRate={vatRate}
+              image={image}
+              brand={brand}
+              variant="icon"
+            />
+            <ComparisonButton
+              productId={id}
+              sku={sku}
+              name={name}
+              priceHT={priceHT}
+              vatRate={vatRate}
+              image={image}
+              brand={brand}
+              variant="icon"
+            />
+          </div>
         </div>
         
         <CardContent className="flex-1 p-4">

@@ -738,5 +738,5 @@ export default config;
 ---
 
 **Version** : 2.1  
-**Dernière mise à jour** : Décembre 2024  
+**Dernière mise à jour** : Novembre 2025  
 **Maintenu par** : Équipe eJS MARKET

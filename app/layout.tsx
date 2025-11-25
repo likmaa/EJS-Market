@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import dynamic from "next/dynamic";
 import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
+import { ComparisonProvider } from "@/contexts/ComparisonContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ClientLayout } from "@/components/ClientLayout";
 import "./globals.css";
@@ -69,7 +71,9 @@ export default function RootLayout({
       <body className={`${plusJakarta.variable} font-sans`}>
         <ErrorBoundary>
           <CartProvider>
-            <ClientLayout>
+            <WishlistProvider>
+              <ComparisonProvider>
+                <ClientLayout>
               <ErrorBoundary>
                 <Header />
               </ErrorBoundary>
@@ -89,7 +93,9 @@ export default function RootLayout({
                 <CookieConsentModal />
               </ErrorBoundary>
               <ServiceWorkerRegistration />
-            </ClientLayout>
+                </ClientLayout>
+              </ComparisonProvider>
+            </WishlistProvider>
           </CartProvider>
         </ErrorBoundary>
       </body>
