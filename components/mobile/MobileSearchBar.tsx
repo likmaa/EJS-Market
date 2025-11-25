@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 
@@ -121,12 +121,14 @@ export function MobileSearchBar({ isOpen, onClose, products = [] }: MobileSearch
     <AnimatePresence>
       {isOpen && (
         <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-          <DialogBackdrop
-            as={motion.div}
+          <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.2 } }}
-            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={onClose}
             className="fixed inset-0 bg-black/50"
+            aria-hidden="true"
           />
 
           <div className="fixed inset-0 flex items-start justify-center pt-16 pointer-events-none">
