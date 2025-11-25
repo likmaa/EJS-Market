@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { WishlistProvider } from '@/contexts/WishlistContext';
 import { WishlistButton } from '@/components/WishlistButton';
 
@@ -7,6 +7,11 @@ const renderWithProvider = (component: React.ReactElement) => {
 };
 
 describe('WishlistButton', () => {
+  beforeEach(() => {
+    // Nettoyer localStorage avant chaque test
+    localStorage.clear();
+  });
+
   const mockProduct = {
     productId: '1',
     sku: 'SKU-001',
@@ -23,27 +28,57 @@ describe('WishlistButton', () => {
     expect(button).toBeInTheDocument();
   });
 
-  it('adds product to wishlist on click', () => {
+  it('adds product to wishlist on click', async () => {
     renderWithProvider(<WishlistButton {...mockProduct} />);
     const button = screen.getByRole('button');
     
-    fireEvent.click(button);
+    await act(async () => {
+      fireEvent.click(button);
+      // Attendre que le contexte se mette à jour
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
     
     // Vérifier que le produit est ajouté (le bouton devrait changer d'état)
-    expect(button).toHaveClass('bg-violet-electric');
+    await waitFor(() => {
+      expect(button).toHaveClass('bg-violet-electric');
+    });
   });
 
-  it('removes product from wishlist when already in wishlist', () => {
+  it('toggles product in wishlist', async () => {
     renderWithProvider(<WishlistButton {...mockProduct} />);
+    
+    // Attendre que le contexte soit chargé
+    await waitFor(() => {
+      expect(screen.getByRole('button')).toBeInTheDocument();
+    });
+    
     const button = screen.getByRole('button');
     
-    // Ajouter d'abord
-    fireEvent.click(button);
-    expect(button).toHaveClass('bg-violet-electric');
+    // Vérifier l'état initial
+    expect(button).toHaveAttribute('aria-label', `Ajouter ${mockProduct.name} à la liste de souhaits`);
     
-    // Puis retirer
-    fireEvent.click(button);
-    expect(button).not.toHaveClass('bg-violet-electric');
+    // Ajouter
+    await act(async () => {
+      fireEvent.click(button);
+      await new Promise(resolve => setTimeout(resolve, 150));
+    });
+    
+    await waitFor(() => {
+      const updatedButton = screen.getByRole('button');
+      expect(updatedButton).toHaveAttribute('aria-label', `Retirer ${mockProduct.name} de la liste de souhaits`);
+    }, { timeout: 2000 });
+    
+    // Retirer
+    const updatedButton = screen.getByRole('button');
+    await act(async () => {
+      fireEvent.click(updatedButton);
+      await new Promise(resolve => setTimeout(resolve, 150));
+    });
+    
+    await waitFor(() => {
+      const finalButton = screen.getByRole('button');
+      expect(finalButton).toHaveAttribute('aria-label', `Ajouter ${mockProduct.name} à la liste de souhaits`);
+    }, { timeout: 2000 });
   });
 
   it('has correct aria-label when not in wishlist', () => {
@@ -52,13 +87,18 @@ describe('WishlistButton', () => {
     expect(button).toHaveAttribute('aria-label', `Ajouter ${mockProduct.name} à la liste de souhaits`);
   });
 
-  it('has correct aria-label when in wishlist', () => {
+  it('has correct aria-label when in wishlist', async () => {
     renderWithProvider(<WishlistButton {...mockProduct} />);
     const button = screen.getByRole('button');
     
-    fireEvent.click(button);
+    await act(async () => {
+      fireEvent.click(button);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
     
-    expect(button).toHaveAttribute('aria-label', `Retirer ${mockProduct.name} de la liste de souhaits`);
+    await waitFor(() => {
+      expect(button).toHaveAttribute('aria-label', `Retirer ${mockProduct.name} de la liste de souhaits`);
+    });
   });
 });
 
