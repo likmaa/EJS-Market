@@ -54,18 +54,20 @@ export const ProductCard = memo(function ProductCard({
   }, [id, sku, name, priceHT, vatRate, image, stock, isActive, addToCart]);
 
   return (
-    <Link href={`/products/${id}`}>
+    <Link href={`/products/${id}`} aria-label={`Voir les détails de ${name}`}>
       <Card hover className="h-full flex flex-col group">
-        <div className="relative w-full h-64 bg-gray-100 overflow-hidden">
+        <div className="relative w-full h-64 bg-gray-100 overflow-hidden" style={{ aspectRatio: '1 / 1' }}>
           {image ? (
             <Image
               src={image}
-              alt={name}
+              alt={`${name} - ${brand}`}
               fill
               className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-125"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               loading="lazy"
               quality={80}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -120,12 +122,12 @@ export const ProductCard = memo(function ProductCard({
         </div>
         
         <CardContent className="flex-1 p-4">
-          <p className="text-sm text-gray-500 mb-1">{brand}</p>
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{name}</h3>
-          <p className="text-2xl font-bold text-blue-600 mb-2">
+          <p className="text-sm text-gray-600 mb-1">{brand}</p>
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2 text-black-deep">{name}</h3>
+          <p className="text-2xl font-bold text-violet-electric mb-2">
             {formatPrice(priceTTC)}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">
             HT: {formatPrice(priceHT)} (TVA incl.)
           </p>
         </CardContent>
@@ -136,6 +138,7 @@ export const ProductCard = memo(function ProductCard({
             className="w-full"
             onClick={handleAddToCart}
             disabled={stock === 0 || !isActive}
+            aria-label={stock > 0 ? `Ajouter ${name} au panier` : `${name} - Rupture de stock`}
           >
             {stock > 0 ? 'Ajouter au panier' : 'Rupture de stock'}
           </Button>

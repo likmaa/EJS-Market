@@ -982,6 +982,7 @@ export default function Home() {
                         <Link 
                           href={`/products/${techImages[currentTechIndex]?.id}`}
                           className="inline-block text-sm text-violet-electric hover:underline font-normal"
+                          aria-label={`Voir les détails de ${techImages[currentTechIndex]?.name}`}
                         >
                           Voir produit
                         </Link>
@@ -998,6 +999,8 @@ export default function Home() {
                         className={`h-2 rounded-full transition-all duration-300 ${
                           index === currentTechIndex ? 'w-8 bg-violet-electric' : 'w-2 bg-white/50 hover:bg-white/75'
                         }`}
+                        aria-label={`Afficher le produit ${index + 1}`}
+                        aria-current={index === currentTechIndex ? 'true' : 'false'}
                       />
                     ))}
                   </div>
@@ -1024,17 +1027,19 @@ export default function Home() {
                       key={product.id}
                           className="min-w-full h-full relative flex-shrink-0"
                     >
-                          <div className="relative w-full h-full bg-gray-200">
+                          <div className="relative w-full h-full bg-gray-200" style={{ aspectRatio: '1 / 1' }}>
                             {shouldLoad && (
                         <Image
                           src={product.url}
-                          alt={product.name}
+                          alt={`${product.name} - Produit jardin`}
                           fill
                           className="object-cover"
                                 sizes="(max-width: 1024px) 100vw, 50vw"
                           priority={index === 0}
                                 loading={index === 0 ? 'eager' : 'lazy'}
                                 quality={85}
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                               />
                             )}
                           </div>
@@ -1064,6 +1069,7 @@ export default function Home() {
                         <Link 
                           href={`/products/${jardinImages[currentJardinIndex]?.id}`}
                           className="inline-block text-sm text-violet-electric hover:underline font-normal"
+                          aria-label={`Voir les détails de ${jardinImages[currentJardinIndex]?.name}`}
                         >
                           Voir produit
                         </Link>
@@ -1080,6 +1086,8 @@ export default function Home() {
                         className={`h-2 rounded-full transition-all duration-300 ${
                           index === currentJardinIndex ? 'w-8 bg-green-garden' : 'w-2 bg-white/50 hover:bg-white/75'
                         }`}
+                        aria-label={`Afficher le produit ${index + 1}`}
+                        aria-current={index === currentJardinIndex ? 'true' : 'false'}
                       />
                     ))}
                   </div>

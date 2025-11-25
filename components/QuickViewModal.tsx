@@ -77,16 +77,18 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
               {/* Images */}
               <div>
-                <div className="relative w-full h-64 md:h-96 bg-gray-soft rounded-lg mb-4">
+                <div className="relative w-full h-64 md:h-96 bg-gray-soft rounded-lg mb-4" style={{ aspectRatio: '4 / 3' }}>
                   {images[selectedImage] ? (
                     <Image
                       src={images[selectedImage]}
-                      alt={product.name}
+                      alt={`${product.name} - Vue rapide`}
                       fill
                       className="object-cover rounded-lg"
                       sizes="(max-width: 768px) 100vw, 50vw"
                       loading="lazy"
                       quality={85}
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">

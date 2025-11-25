@@ -59,15 +59,17 @@ export const MobileProductCard = memo(function MobileProductCard({
       className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full active:scale-[0.98]"
     >
       {/* Image - Hauteur similaire au desktop (h-80 = 320px, adapté pour mobile) */}
-      <Link href={`/products/${id}`} className="relative w-full h-64 bg-gray-100 overflow-hidden block flex-shrink-0">
+      <Link href={`/products/${id}`} className="relative w-full h-64 bg-gray-100 overflow-hidden block flex-shrink-0" aria-label={`Voir les détails de ${name}`} style={{ aspectRatio: '1 / 1' }}>
         <Image
           src={image}
-          alt={name}
+          alt={`${name}${creator ? ` par ${creator}` : ''}`}
           fill
           className="object-cover transition-transform duration-300 hover:scale-105"
           sizes="(max-width: 768px) 100vw, 25vw"
           loading="lazy"
           quality={75}
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
         />
       </Link>
       
@@ -77,7 +79,7 @@ export const MobileProductCard = memo(function MobileProductCard({
         <div className="border-b border-gray-200 pb-3 mb-3">
           {/* Catégorie */}
           {category && (
-            <p className="text-xs text-gray-400 mb-2 font-normal">
+            <p className="text-xs text-gray-600 mb-2 font-normal">
               {category}
             </p>
           )}
@@ -93,7 +95,7 @@ export const MobileProductCard = memo(function MobileProductCard({
           <div>
             {creator && (
               <>
-                <span className="text-sm text-gray-500 font-normal">By </span>
+                <span className="text-sm text-gray-600 font-normal">By </span>
                 <span className="text-sm text-black-deep font-medium">{creator}</span>
               </>
             )}
@@ -110,6 +112,7 @@ export const MobileProductCard = memo(function MobileProductCard({
           <button
             onClick={handleViewProduct}
             className="text-sm text-violet-electric hover:underline font-normal"
+            aria-label={`Voir les détails de ${name}`}
           >
             Détails
           </button>
@@ -117,7 +120,7 @@ export const MobileProductCard = memo(function MobileProductCard({
             onClick={handleAddToCart}
             whileTap={{ scale: 0.9 }}
             className="p-2 bg-violet-electric text-white rounded-full hover:bg-violet-700 transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
-            aria-label="Ajouter au panier"
+            aria-label={`Ajouter ${name} au panier`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

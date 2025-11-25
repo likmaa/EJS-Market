@@ -165,17 +165,46 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <Link href="/checkout">
-                    <Button variant="primary" size="lg" className="w-full">
-                      Passer la commande
-                    </Button>
-                  </Link>
-                  <Link href="/products">
-                    <Button variant="outline" className="w-full">
-                      Continuer les achats
-                    </Button>
-                  </Link>
+                <div className="flex flex-col gap-4">
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    className="w-full"
+                  >
+                    <Link href="/checkout" className="block w-full">
+                      <Button 
+                        variant="primary" 
+                        size="lg" 
+                        className="w-full bg-violet-electric hover:bg-violet-700 text-white font-semibold py-4 text-base lg:text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
+                        aria-label="Passer la commande et procéder au paiement"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Passer la commande
+                      </Button>
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    className="w-full mt-1"
+                  >
+                    <Link href="/products" className="block w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-2 border-violet-electric text-violet-electric hover:bg-violet-50 hover:border-violet-700 font-medium py-3 text-sm lg:text-base transition-all duration-200 flex items-center justify-center gap-2 bg-white"
+                        aria-label="Continuer les achats et retourner à la boutique"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Continuer les achats
+                      </Button>
+                    </Link>
+                  </motion.div>
                 </div>
               </CardContent>
             </Card>

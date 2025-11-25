@@ -299,7 +299,7 @@ export default function ProductDetailPage() {
         {/* Images */}
         <div>
           {/* Image principale */}
-          <div className="relative w-full h-[500px] md:h-[600px] bg-gray-soft rounded-xl mb-4 overflow-hidden group">
+          <div className="relative w-full h-[500px] md:h-[600px] bg-gray-soft rounded-xl mb-4 overflow-hidden group" style={{ aspectRatio: '4 / 3' }}>
             {product.images[selectedImage] ? (
               <motion.div
                 key={selectedImage}
@@ -310,13 +310,15 @@ export default function ProductDetailPage() {
               >
                 <Image
                   src={product.images[selectedImage]}
-                  alt={product.name}
+                  alt={`${product.name} - Image principale`}
                   fill
                   className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority={selectedImage === 0}
                   loading={selectedImage === 0 ? 'eager' : 'lazy'}
                   quality={90}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
               </motion.div>
             ) : (
@@ -345,15 +347,19 @@ export default function ProductDetailPage() {
                       ? 'border-violet-electric shadow-md scale-105'
                       : 'border-transparent hover:border-gray-300'
                   }`}
+                  aria-label={`Afficher l'image ${index + 1} de ${product.name}`}
+                  aria-current={selectedImage === index ? 'true' : 'false'}
                 >
                   <Image
                     src={image}
-                    alt={`${product.name} - Image ${index + 1}`}
+                    alt={`${product.name} - Miniature ${index + 1}`}
                     fill
                     className="object-cover"
                     sizes="80px"
                     loading="lazy"
                     quality={75}
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                   />
                 </button>
               ))}
@@ -433,6 +439,8 @@ export default function ProductDetailPage() {
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="w-12 h-12 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 hover:border-violet-electric transition-all font-bold text-lg"
+                  aria-label="Diminuer la quantité"
+                  disabled={quantity <= 1}
                 >
                   −
                 </button>
@@ -447,6 +455,8 @@ export default function ProductDetailPage() {
                 <button
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                   className="w-12 h-12 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 hover:border-violet-electric transition-all font-bold text-lg"
+                  aria-label="Augmenter la quantité"
+                  disabled={quantity >= product.stock}
                 >
                   +
                 </button>
@@ -468,6 +478,7 @@ export default function ProductDetailPage() {
                 }`}
                 onClick={handleAddToCart}
                 disabled={product.stock === 0 || !product.isActive || isAdding}
+                aria-label={product.stock > 0 ? `Ajouter ${quantity} ${product.name} au panier` : `${product.name} - Rupture de stock`}
               >
                 {isAdding ? (
                   <span className="flex items-center gap-2">
@@ -685,17 +696,19 @@ export default function ProductDetailPage() {
                   </div>
                   
                   {/* Version Desktop */}
-                  <Link href={`/products/${similarProduct.id}`} className="hidden lg:block">
+                  <Link href={`/products/${similarProduct.id}`} className="hidden lg:block" aria-label={`Voir les détails de ${similarProduct.name}`}>
                     <Card hover className="h-full bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shadow-sm group">
-                      <div className="h-80 bg-gray-soft rounded-t-lg overflow-hidden flex-shrink-0 relative">
+                      <div className="h-80 bg-gray-soft rounded-t-lg overflow-hidden flex-shrink-0 relative" style={{ aspectRatio: '1 / 1' }}>
                         <Image
                           src={similarProduct.images[0]}
-                          alt={similarProduct.name}
+                          alt={`${similarProduct.name} - Produit similaire`}
                           fill
                           className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-125"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                           loading="lazy"
                           quality={80}
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                         />
                       </div>
                       <CardContent className="p-7 flex-1 flex flex-col justify-between min-h-[300px] bg-off-white">
