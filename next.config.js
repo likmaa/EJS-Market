@@ -15,6 +15,13 @@ const nextConfig = {
     // Désactiver l'optimisation statique pour développement (plus rapide)
     unoptimized: process.env.NODE_ENV === 'development',
   },
+  // Optimisations de production
+  compress: true,
+  poweredByHeader: false,
+  // Code splitting optimisé
+  experimental: {
+    optimizePackageImports: ['framer-motion', '@headlessui/react'],
+  },
   // Headers de sécurité
   async headers() {
     return [

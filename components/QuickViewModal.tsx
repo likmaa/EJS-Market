@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 import { formatPrice, calculateTTC } from '@/lib/utils';
-import { useCart } from '@/hooks/useCart';
+import { useCart } from '@/contexts/CartContext';
 
 interface QuickViewModalProps {
   product: {
@@ -35,16 +35,17 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   const images = product.images || [];
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
+    addToCart(
+      {
         productId: product.id,
         sku: product.sku,
         name: product.name,
         priceHT: product.priceHT,
         vatRate: product.vatRate,
         image: images[0],
-      });
-    }
+      },
+      quantity
+    );
     onClose();
   };
 

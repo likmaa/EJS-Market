@@ -1,7 +1,10 @@
+'use client';
+
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onAnimationStart' | 'onDrag' | 'onDragEnd' | 'onDragStart'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   children: ReactNode;
@@ -24,18 +27,21 @@ export function Button({
   };
   
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-3 py-1.5 text-sm min-h-[36px]',
+    md: 'px-4 py-2 text-base min-h-[44px]',
+    lg: 'px-6 py-3 text-lg min-h-[48px]',
   };
 
   return (
-    <button
+    <motion.button
+      whileTap={{ scale: 0.97 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: 'spring' as const, stiffness: 400, damping: 17 }}
       className={cn(baseStyles, variants[variant], sizes[size], className)}
-      {...props}
+      {...(props as HTMLMotionProps<'button'>)}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
 

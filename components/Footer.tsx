@@ -3,6 +3,70 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
+// URLs des logos officiels depuis CDN publics (Simple Icons - source fiable)
+const PAYMENT_LOGOS: Record<string, { local?: string; cdn: string }> = {
+  visa: {
+    local: '/payment-logos/visa.svg',
+    cdn: 'https://cdn.simpleicons.org/visa/1434CB',
+  },
+  mastercard: {
+    local: '/payment-logos/mastercard.svg',
+    cdn: 'https://cdn.simpleicons.org/mastercard/EB001B',
+  },
+  paypal: {
+    local: '/payment-logos/paypal.svg',
+    cdn: 'https://cdn.simpleicons.org/paypal/003087',
+  },
+  amex: {
+    local: '/payment-logos/amex.svg',
+    cdn: 'https://cdn.simpleicons.org/americanexpress/006FCF',
+  },
+  stripe: {
+    local: '/payment-logos/stripe.svg',
+    cdn: 'https://cdn.simpleicons.org/stripe/635BFF',
+  },
+};
+
+// Composant pour afficher un logo de paiement (essaie local d'abord, puis CDN)
+function PaymentLogo({ name, alt }: { name: string; alt: string }) {
+  const logoConfig = PAYMENT_LOGOS[name];
+  if (!logoConfig) return null;
+
+  // Essaie d'abord le logo local, puis le CDN en fallback
+  return (
+    <div 
+      className="w-16 h-10 bg-white border border-gray-200 rounded-md flex items-center justify-center p-2 shadow-sm hover:shadow-md transition-all hover:scale-105"
+      title={alt}
+    >
+      <Image
+        src={logoConfig.local || logoConfig.cdn}
+        alt={alt}
+        width={64}
+        height={40}
+        className="object-contain w-full h-full transition-all duration-300"
+        loading="lazy"
+        unoptimized
+        style={{
+          filter: 'brightness(0) saturate(100%) contrast(200%) drop-shadow(0 1px 3px rgba(0,0,0,0.3))',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.filter = 'brightness(0) saturate(100%) contrast(250%) drop-shadow(0 2px 5px rgba(0,0,0,0.5))';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.filter = 'brightness(0) saturate(100%) contrast(200%) drop-shadow(0 1px 3px rgba(0,0,0,0.3))';
+        }}
+        onError={(e) => {
+          // Si le fichier local échoue, utilise le CDN
+          const target = e.target as HTMLImageElement;
+          if (logoConfig.local && target.src !== logoConfig.cdn) {
+            target.src = logoConfig.cdn;
+          }
+        }}
+      />
+    </div>
+  );
+}
+
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -93,11 +157,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/careers" className="text-gray-600 hover:text-violet-electric transition-colors text-sm">
-                  Carrières
-                </Link>
-              </li>
-              <li>
                 <Link href="/be-pro" className="text-gray-600 hover:text-violet-electric transition-colors text-sm">
                   Programme Pro
                 </Link>
@@ -169,17 +228,41 @@ export function Footer() {
             </p>
             
             {/* Paiements acceptés */}
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-sm mr-2">Paiements sécurisés :</span>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-5 bg-gray-200 rounded flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-600">VISA</span>
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-gray-500 text-sm font-medium">Paiements sécurisés :</span>
+              <div className="flex items-center gap-2.5 flex-wrap justify-center">
+                {/* Logos de paiement depuis CDN ou fichiers locaux */}
+                <PaymentLogo name="visa" alt="Visa" />
+                <PaymentLogo name="mastercard" alt="Mastercard" />
+                <PaymentLogo name="paypal" alt="PayPal" />
+                <PaymentLogo name="amex" alt="American Express" />
+                <PaymentLogo name="stripe" alt="Stripe" />
+              </div>
+              
+              {/* Badges de sécurité */}
+              <div className="flex items-center gap-2 flex-wrap justify-center mt-1">
+                {/* SSL */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg text-green-700 shadow-sm hover:shadow-md transition-all">
+                  <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                  </svg>
+                  <span className="text-xs font-bold whitespace-nowrap">SSL Sécurisé</span>
                 </div>
-                <div className="w-8 h-5 bg-gray-200 rounded flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-600">MC</span>
+                
+                {/* PCI DSS */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 shadow-sm hover:shadow-md transition-all">
+                  <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                  <span className="text-xs font-bold whitespace-nowrap">PCI DSS</span>
                 </div>
-                <div className="w-8 h-5 bg-gray-200 rounded flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-600">PP</span>
+                
+                {/* 3D Secure */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 border border-violet-200 rounded-lg text-violet-700 shadow-sm hover:shadow-md transition-all">
+                  <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.4-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
+                  </svg>
+                  <span className="text-xs font-bold whitespace-nowrap">3D Secure</span>
                 </div>
               </div>
             </div>

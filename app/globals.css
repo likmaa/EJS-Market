@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safe area pour les iPhones avec encoche */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 :root {
   --background: #FAFAFA;
   --foreground: #111111;

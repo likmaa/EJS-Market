@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCart } from '@/hooks/useCart';
+import { useCart } from '@/contexts/CartContext';
 import { formatPrice } from '@/lib/utils';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import Link from 'next/link';

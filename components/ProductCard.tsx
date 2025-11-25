@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter } from './ui/Card';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 import { formatPrice } from '@/lib/utils';
-import { useCart } from '@/hooks/useCart';
+import { useCart } from '@/contexts/CartContext';
 
 interface ProductCardProps {
   id: string;

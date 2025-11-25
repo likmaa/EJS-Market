@@ -8,60 +8,195 @@ import Marquee from 'react-fast-marquee';
 import { Disclosure } from '@headlessui/react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, calculateTTC } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+import { Toast } from '@/components/Toast';
+import { MobileProductCard, MobileProductCarousel, MobileFiltersBar } from '@/components/mobile';
 
-// Composant pour afficher un logo partenaire
-function PartnerLogoItem({ brand }: { brand: { name: string; logo: React.ReactNode } }) {
+// Lazy load le modal pour améliorer les performances
+const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal').then(mod => ({ default: mod.ProductDetailModal })), {
+  loading: () => null,
+  ssr: false,
+});
+import { useCart } from '@/contexts/CartContext';
+
+// Type pour un logo partenaire
+interface PartnerLogo {
+  name: string;
+  local: string;
+  cdn: string;
+}
+
+// URLs des logos partenaires depuis CDN (Simple Icons) ou fichiers locaux
+// Électronique & Jardinage
+const partnerLogos: PartnerLogo[] = [
+  // Électronique - Smartphones & Ordinateurs
+  {
+    name: 'Apple',
+    local: '/logos/apple.svg',
+    cdn: 'https://cdn.simpleicons.org/apple/000000',
+  },
+  {
+    name: 'Samsung',
+    local: '/logos/samsung.svg',
+    cdn: 'https://cdn.simpleicons.org/samsung/1428A0',
+  },
+  {
+    name: 'Sony',
+    local: '/logos/sony.svg',
+    cdn: 'https://cdn.simpleicons.org/sony/000000',
+  },
+  {
+    name: 'LG',
+    local: '/logos/lg.svg',
+    cdn: 'https://cdn.simpleicons.org/lg/A50034',
+  },
+  {
+    name: 'Dell',
+    local: '/logos/dell.svg',
+    cdn: 'https://cdn.simpleicons.org/dell/007DB8',
+  },
+  {
+    name: 'HP',
+    local: '/logos/hp.svg',
+    cdn: 'https://cdn.simpleicons.org/hp/0096D6',
+  },
+  {
+    name: 'Lenovo',
+    local: '/logos/lenovo.svg',
+    cdn: 'https://cdn.simpleicons.org/lenovo/E2231A',
+  },
+  {
+    name: 'ASUS',
+    local: '/logos/asus.svg',
+    cdn: 'https://cdn.simpleicons.org/asus/000000',
+  },
+  {
+    name: 'Acer',
+    local: '/logos/acer.svg',
+    cdn: 'https://cdn.simpleicons.org/acer/83B81A',
+  },
+  {
+    name: 'MSI',
+    local: '/logos/msi.svg',
+    cdn: 'https://cdn.simpleicons.org/msi/FF0000',
+  },
+  
+  // Électronique - Photo & Vidéo & Gaming
+  {
+    name: 'Nikon',
+    local: '/logos/nikon.svg',
+    cdn: 'https://cdn.simpleicons.org/nikon/000000',
+  },
+  {
+    name: 'Panasonic',
+    local: '/logos/panasonic.svg',
+    cdn: 'https://cdn.simpleicons.org/panasonic/EB1923',
+  },
+  {
+    name: 'JBL',
+    local: '/logos/jbl.svg',
+    cdn: 'https://cdn.simpleicons.org/jbl/FF3300',
+  },
+  {
+    name: 'Google',
+    local: '/logos/google.svg',
+    cdn: 'https://cdn.simpleicons.org/google/4285F4',
+  },
+  {
+    name: 'PlayStation',
+    local: '/logos/playstation.svg',
+    cdn: 'https://cdn.simpleicons.org/playstation/003087',
+  },
+  {
+    name: 'Intel',
+    local: '/logos/intel.svg',
+    cdn: 'https://cdn.simpleicons.org/intel/0071C5',
+  },
+  {
+    name: 'AMD',
+    local: '/logos/amd.svg',
+    cdn: 'https://cdn.simpleicons.org/amd/ED1C24',
+  },
+  {
+    name: 'NVIDIA',
+    local: '/logos/nvidia.svg',
+    cdn: 'https://cdn.simpleicons.org/nvidia/76B900',
+  },
+  
+  // Jardinage & Outils
+  {
+    name: 'Husqvarna',
+    local: '/logos/husqvarna.svg',
+    cdn: 'https://cdn.simpleicons.org/husqvarna/27378C',
+  },
+  {
+    name: 'STIHL',
+    local: '/logos/stihl.svg',
+    cdn: 'https://cdn.simpleicons.org/stihl/000000',
+  },
+  {
+    name: 'Bosch',
+    local: '/logos/bosch.svg',
+    cdn: 'https://cdn.simpleicons.org/bosch/EA0016',
+  },
+  // Ajout de plus de marques électroniques
+  {
+    name: 'Xiaomi',
+    local: '/logos/xiaomi.svg',
+    cdn: 'https://cdn.simpleicons.org/xiaomi/FF6900',
+  },
+  {
+    name: 'OnePlus',
+    local: '/logos/oneplus.svg',
+    cdn: 'https://cdn.simpleicons.org/oneplus/EB0028',
+  },
+  {
+    name: 'Razer',
+    local: '/logos/razer.svg',
+    cdn: 'https://cdn.simpleicons.org/razer/00FF00',
+  },
+  {
+    name: 'Logitech',
+    local: '/logos/logitech.svg',
+    cdn: 'https://cdn.simpleicons.org/logitech/00B8FC',
+  },
+];
+
+// Composant pour afficher un logo partenaire (essaie local d'abord, puis CDN)
+function PartnerLogoItem({ brand }: { brand: PartnerLogo }) {
   return (
     <div className="mx-16 flex items-center justify-center h-20 flex-shrink-0">
-      <div className="relative opacity-40 hover:opacity-70 transition-opacity duration-300 filter grayscale">
-        {brand.logo}
+      <div className="relative opacity-70 hover:opacity-100 transition-all duration-300">
+        <Image
+          src={brand.local || brand.cdn}
+          alt={`Logo ${brand.name}`}
+          width={120}
+          height={40}
+          className="h-14 w-auto object-contain transition-all duration-300"
+          loading="lazy"
+          unoptimized
+          style={{
+            filter: 'brightness(0) saturate(100%) contrast(200%) drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.filter = 'brightness(0) saturate(100%) contrast(250%) drop-shadow(0 4px 8px rgba(0,0,0,0.6))';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.filter = 'brightness(0) saturate(100%) contrast(200%) drop-shadow(0 2px 6px rgba(0,0,0,0.4))';
+          }}
+          onError={(e) => {
+            // Si le fichier local échoue, utilise le CDN
+            const target = e.target as HTMLImageElement;
+            if (brand.local && target.src !== brand.cdn) {
+              target.src = brand.cdn;
+            }
+          }}
+        />
       </div>
     </div>
   );
 }
-
-// Logos SVG des partenaires intégrés directement
-const partnerLogos = [
-  {
-    name: 'Apple',
-    logo: (
-      <svg viewBox="0 0 100 120" className="h-14 w-auto" fill="currentColor">
-        <path d="M78.1 10.6c-1.2 1.4-3.1 2.4-4.8 2.4-4.6 0-8.4-3.8-11-3.8-2.7 0-6.8 3.7-11.2 3.7-4 0-9.2-5.1-15.3-5.1C23 8.8 14 18.3 14 32.3c0 10.3 4.4 21.3 10 28.7 5.2 7 11.5 14.8 20.1 14.8 4.6 0 8-1.5 13-1.5 5.3 0 8.2 1.5 13.3 1.5 8.5 0 14.3-7.2 19.4-14.1 4.3-6.2 6.1-12.2 6.2-12.5-.1-.1-11.8-4.5-11.8-17.1 0-10.8 8.8-16 9.5-16.5-5.2-7.7-13.3-8.6-16.1-8.8zm-16.1-9.1c3.2-3.8 5.4-9.1 4.8-14.5-4.6.2-10.2 3.1-13.5 6.9-3 3.5-5.6 9-4.9 14.3 5.1.4 10.3-2.6 13.6-6.7z"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'Sony',
-    logo: (
-      <svg viewBox="0 0 200 60" className="h-12 w-auto" fill="currentColor">
-        <path d="M10 15h12v30H10V15zm18 0h12v30H28V15zm18 0h12v30H46V15zm18 0h12v30H64V15zm18 0h12v30H82V15zm18 0h12v30H100V15zm18 0h12v30H118V15zm18 0h12v30H136V15zm18 0h12v30H154V15zm18 0h12v30H172V15z"/>
-        <path d="M88 35h24v6H88v-6zm0 12h20v6H88v-6z"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'Husqvarna',
-    logo: (
-      <svg viewBox="0 0 280 80" className="h-12 w-auto" fill="none">
-        <path d="M 35 25 Q 35 15 45 15 Q 55 15 55 25" stroke="currentColor" strokeWidth="3" fill="none"/>
-        <path d="M 85 25 Q 85 15 95 15 Q 105 15 105 25" stroke="currentColor" strokeWidth="3" fill="none"/>
-        <path d="M 160 25 Q 160 15 170 15 Q 180 15 180 25" stroke="currentColor" strokeWidth="3" fill="none"/>
-        <text x="30" y="55" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="700" fill="currentColor" letterSpacing="2">HUSQVARNA</text>
-        <line x1="25" y1="65" x2="255" y2="65" stroke="currentColor" strokeWidth="2"/>
-      </svg>
-    ),
-  },
-  {
-    name: 'STIHL',
-    logo: (
-      <svg viewBox="0 0 180 60" className="h-14 w-auto" fill="none">
-        <text x="5" y="45" fontFamily="'Arial Black', Arial, sans-serif" fontSize="38" fontWeight="900" fill="currentColor" letterSpacing="5">STIHL</text>
-        <line x1="0" y1="50" x2="175" y2="50" stroke="currentColor" strokeWidth="3"/>
-      </svg>
-    ),
-  },
-];
 
 // Questions FAQ
 interface FAQItem {
@@ -110,6 +245,11 @@ export default function Home() {
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
+  const { addToCart, itemsCount } = useCart();
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [lastAddedProduct, setLastAddedProduct] = useState<{ name: string; image: string; quantity: number } | null>(null);
   
   // États pour les filtres
   const [openDropdown, setOpenDropdown] = useState<'category' | 'univers' | null>(null);
@@ -118,12 +258,62 @@ export default function Home() {
   
   // Options de filtres
   const categoryOptions = [
-    { id: 'electronics', label: 'Électronique', icon: '📱' },
-    { id: 'garden', label: 'Jardinage', icon: '🌱' },
-    { id: 'gaming', label: 'Gaming', icon: '🎮' },
-    { id: 'photo', label: 'Photo & Vidéo', icon: '📷' },
-    { id: 'mobility', label: 'E-Mobilité', icon: '🛴' },
-    { id: 'tools', label: 'Outils', icon: '🔧' },
+    { 
+      id: 'electronics', 
+      label: 'Électronique', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      )
+    },
+    { 
+      id: 'garden', 
+      label: 'Jardinage', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      )
+    },
+    { 
+      id: 'gaming', 
+      label: 'Gaming', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+        </svg>
+      )
+    },
+    { 
+      id: 'photo', 
+      label: 'Photo & Vidéo', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      )
+    },
+    { 
+      id: 'mobility', 
+      label: 'E-Mobilité', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      )
+    },
+    { 
+      id: 'tools', 
+      label: 'Outils', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      )
+    },
   ];
   
   const universOptions = [
@@ -459,8 +649,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-white pt-4 pb-8">
+      {/* Hero Section - Masqué sur mobile */}
+      <section className="hidden md:block relative bg-white pt-4 pb-8">
         <div className="max-w-[1600px] mx-auto px-12 lg:px-16 xl:px-20 2xl:px-24">
           {/* 1. Barre de filtres en haut */}
           <div className="bg-gray-soft rounded-xl px-6 py-4 mb-8 shadow-sm">
@@ -515,7 +705,7 @@ export default function Home() {
                                     : 'text-gray-700 hover:bg-gray-50'
                                 }`}
                               >
-                                <span className="text-lg">{option.icon}</span>
+                                <span className="flex-shrink-0">{option.icon}</span>
                                 <span className="flex-1">{option.label}</span>
                                 {selectedCategories.includes(option.id) && (
                                   <svg className="w-4 h-4 text-violet-electric" fill="currentColor" viewBox="0 0 20 20">
@@ -577,7 +767,7 @@ export default function Home() {
                                     : 'text-gray-700 hover:bg-gray-50'
                                 }`}
                               >
-                                <span className="text-lg">{option.icon}</span>
+                                <span className="flex-shrink-0">{option.icon}</span>
                                 <span className="flex-1">{option.label}</span>
                                 {selectedUnivers.includes(option.id) && (
                                   <svg className="w-4 h-4 text-violet-electric" fill="currentColor" viewBox="0 0 20 20">
@@ -691,7 +881,9 @@ export default function Home() {
                 <span className="text-sm font-semibold text-black-deep">4.8</span>
                 <span className="text-sm text-gray-600">sur</span>
                 <span className="text-sm font-semibold text-black-deep">Trustpilot</span>
-                <span className="text-sm text-gray-600">•</span>
+                <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
                 <span className="text-sm text-gray-600">2,547 avis</span>
               </div>
             </div>
@@ -699,11 +891,18 @@ export default function Home() {
               {displayedText || 'eJS MARKET'}
               <span className="animate-pulse">|</span>
             </h1>
-            <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base md:text-lg text-gray-600 max-w-3xl mx-auto mb-8">
               Votre marketplace premium pour l&apos;électronique et le jardinage intelligent.{' '}
               <br className="hidden md:block" />
               Des milliers de produits sélectionnés, livrés rapidement partout en Europe.
             </p>
+            <div className="flex justify-center">
+              <Link href="/products">
+                <Button className="bg-violet-electric hover:bg-violet-700 text-white px-8 py-3 text-lg font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+                  Voir la boutique
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* 4. Deux grandes grilles avec carrousels */}
@@ -875,11 +1074,64 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Hero Section Mobile - Titre et sous-titre seulement */}
+      <section className="md:hidden relative bg-white pt-6 pb-6">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-violet-electric mb-4">
+              {displayedText || 'eJS MARKET'}
+              <span className="animate-pulse">|</span>
+            </h1>
+            <p className="text-sm text-gray-600 max-w-xl mx-auto">
+              Votre marketplace premium pour l&apos;électronique et le jardinage intelligent. Des milliers de produits sélectionnés, livrés rapidement partout en Europe.
+            </p>
+          </div>
+          
+          {/* Barre de filtres mobile uniquement sur la page d'accueil */}
+          <div className="px-0">
+            <MobileFiltersBar
+              categoryOptions={categoryOptions}
+              universOptions={universOptions}
+              selectedCategories={selectedCategories}
+              selectedUnivers={selectedUnivers}
+              onToggleCategory={toggleCategory}
+              onToggleUnivers={toggleUnivers}
+              onResetFilters={resetFilters}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Trending (Produits Phares) */}
-      <section className="pt-8 pb-16 bg-white">
-        <div className="max-w-[1600px] mx-auto px-12 lg:px-16 xl:px-20 2xl:px-24">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Produits avec images de la boutique */}
+      <section className="pt-4 md:pt-8 pb-16 bg-white">
+        <div className="max-w-[1600px] mx-auto px-0 md:px-12 lg:px-16 xl:px-20 2xl:px-24">
+          {/* Version Mobile - Carrousel horizontal */}
+          <div className="lg:hidden w-full overflow-hidden">
+            <MobileProductCarousel
+              products={[
+                { id: 1, name: 'iPhone 15 Pro', creator: 'Apple', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500', price: 1199 },
+                { id: 2, name: 'PlayStation 5', creator: 'Sony', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500', price: 499 },
+                { id: 3, name: 'Sony Alpha 7 IV', creator: 'Sony', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500', price: 2799 },
+                { id: 4, name: 'MacBook Pro M3', creator: 'Apple', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500', price: 1999 },
+                { id: 5, name: 'Robot Tondeuse Automower 430X', creator: 'Husqvarna', category: 'Univers Jardin', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=500', price: 2499 },
+                { id: 6, name: 'Tondeuse Robot Gardena', creator: 'Gardena', category: 'Univers Jardin', image: '/jard2.jpg', price: 899 },
+                { id: 7, name: 'Tronçonneuse STIHL', creator: 'STIHL', category: 'Univers Jardin', image: '/jard3.jpg', price: 349 },
+                { id: 8, name: 'Aspirateur Robot Roomba', creator: 'iRobot', category: 'Univers Jardin', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', price: 599 },
+              ]}
+              onViewProduct={(product) => {
+                setSelectedProduct(product);
+                setIsModalOpen(true);
+              }}
+            />
+            <div className="text-center mt-6">
+              <Link href="/products" className="text-base text-violet-electric hover:underline font-bold">
+                Voir tous les produits
+              </Link>
+            </div>
+          </div>
+
+          {/* Version Desktop - Grille */}
+          <div className="hidden lg:grid grid-cols-4 gap-4 items-stretch">
             {[
               { id: 1, name: 'iPhone 15 Pro', creator: 'Apple', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500', price: 1199 },
               { id: 2, name: 'PlayStation 5', creator: 'Sony', category: 'Univers Tech', image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500', price: 499 },
@@ -889,62 +1141,94 @@ export default function Home() {
               { id: 6, name: 'Tondeuse Robot Gardena', creator: 'Gardena', category: 'Univers Jardin', image: '/jard2.jpg', price: 899 },
               { id: 7, name: 'Tronçonneuse STIHL', creator: 'STIHL', category: 'Univers Jardin', image: '/jard3.jpg', price: 349 },
               { id: 8, name: 'Aspirateur Robot Roomba', creator: 'iRobot', category: 'Univers Jardin', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', price: 599 },
-            ].map((product) => {
-              return (
-                <Card key={product.id} hover className="h-full bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shadow-sm group">
-                  <div className="h-80 bg-gray-soft rounded-t-lg overflow-hidden flex-shrink-0 relative">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-125"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                      loading="lazy"
-                      quality={80}
-                    />
+            ].map((product) => (
+              <Card key={product.id} hover className="h-full bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shadow-sm group">
+                <div className="h-80 bg-gray-soft rounded-t-lg overflow-hidden flex-shrink-0 relative">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-125"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    loading="lazy"
+                    quality={80}
+                  />
+                </div>
+                <CardContent className="p-7 flex-1 flex flex-col justify-between min-h-[300px] bg-off-white">
+                  {/* Section 1: Category + Title */}
+                  <div className="border-b border-gray-200 pb-3 mb-3">
+                    <p className="text-xs text-gray-400 mb-2 font-normal">{product.category}</p>
+                    <h3 className="font-bold text-black-deep text-xl leading-snug">{product.name}</h3>
                   </div>
-                  <CardContent className="p-7 flex-1 flex flex-col justify-between min-h-[300px] bg-off-white">
-                    {/* Section 1: Category + Title */}
-                    <div className="border-b border-gray-200 pb-3 mb-3">
-                      <p className="text-xs text-gray-400 mb-2 font-normal">{product.category}</p>
-                      <h3 className="font-bold text-black-deep text-xl leading-snug">{product.name}</h3>
+                  
+                  {/* Section 2: By Creator + Price */}
+                  <div className="border-b border-gray-200 pb-3 mb-3 flex items-baseline justify-between">
+                    <div>
+                      <span className="text-sm text-gray-500 font-normal">By </span>
+                      <span className="text-sm text-black-deep font-medium">{product.creator}</span>
                     </div>
-                    
-                    {/* Section 2: By Creator + Price */}
-                    <div className="border-b border-gray-200 pb-3 mb-3 flex items-baseline justify-between">
-                      <div>
-                        <span className="text-sm text-gray-500 font-normal">By </span>
-                        <span className="text-sm text-black-deep font-medium">{product.creator}</span>
-                      </div>
-                      <div className="text-right flex items-baseline">
-                        <span className="text-sm text-black-deep font-normal">from </span>
-                        <span className="text-4xl font-bold text-black-deep ml-1">{Math.floor(product.price)}</span>
-                        <span className="text-sm text-black-deep font-normal ml-1"> €</span>
-                      </div>
+                    <div className="text-right flex items-baseline">
+                      <span className="text-sm text-black-deep font-normal">from </span>
+                      <span className="text-4xl font-bold text-black-deep ml-1">{Math.floor(product.price)}</span>
+                      <span className="text-sm text-black-deep font-normal ml-1"> €</span>
                     </div>
-                    
-                    {/* Section 3: View Product */}
-                    <div className="pt-1">
-                      <Link href={`/products/${product.id}`} className="text-sm text-violet-electric hover:underline font-normal">
-                        View Product
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  </div>
+                  
+                  {/* Section 3: Actions */}
+                  <div className="pt-1 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setSelectedProduct(product);
+                        setIsModalOpen(true);
+                      }}
+                      className="text-sm text-violet-electric hover:underline font-normal"
+                    >
+                      View Product
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const priceHT = product.price * 100;
+                        addToCart(
+                          {
+                            productId: String(product.id),
+                            sku: `SKU-${product.id}`,
+                            name: product.name,
+                            priceHT,
+                            vatRate: 0.20,
+                            image: product.image,
+                          },
+                          1
+                        );
+                        setLastAddedProduct({ name: product.name, image: product.image, quantity: 1 });
+                        setShowToast(true);
+                      }}
+                      className="p-2 bg-violet-electric text-white rounded-full hover:bg-violet-700 transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                      aria-label="Ajouter au panier"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          <div className="text-center mt-8">
+          <div className="hidden lg:block text-center mt-8">
             <Link href="/products" className="text-base text-violet-electric hover:underline font-bold">
-                Voir tous les produits
+              Voir tous les produits
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Section Immersive 3D - Produits Tech */}
+      {/* Section Immersive 3D - Produits Tech - Masquée sur mobile */}
       <section 
-        className="relative w-full h-[90vh] min-h-[700px] overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black"
+        className="hidden md:block relative w-full h-[90vh] min-h-[700px] overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -1061,8 +1345,8 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Témoignages - Défilement Horizontal */}
-      <section className="py-20 bg-off-white overflow-hidden">
+      {/* Témoignages - Défilement Horizontal - Masqués sur mobile */}
+      <section className="hidden md:block py-20 bg-off-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-16 text-black-deep">
             Ce que disent nos clients
@@ -1132,8 +1416,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Partenaires - Défilement Horizontal Infini */}
-      <section className="py-12 bg-white overflow-hidden">
+      {/* Partenaires - Défilement Horizontal Infini - Masqués sur mobile */}
+      <section className="hidden md:block py-12 bg-white overflow-hidden">
         <Marquee
           speed={50}
           direction="right"
@@ -1240,6 +1524,47 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      {/* Modal de détail produit */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={{
+            id: String(selectedProduct.id),
+            sku: `SKU-${selectedProduct.id}`,
+            name: selectedProduct.name,
+            creator: selectedProduct.creator,
+            description: { fr: `Description de ${selectedProduct.name}`, en: '' },
+            priceHT: selectedProduct.price * 100,
+            vatRate: 0.20,
+            brand: selectedProduct.creator,
+            category: selectedProduct.category === 'Univers Tech' ? 'electronics' : 'garden',
+            categoryLabel: selectedProduct.category,
+            stock: 10,
+            isActive: true,
+            images: [selectedProduct.image, selectedProduct.image],
+            attributes: {},
+            features: [],
+          }}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
+        />
+      )}
+
+      {/* Toast de confirmation */}
+      {lastAddedProduct && (
+        <Toast
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          message="Produit ajouté au panier"
+          productName={lastAddedProduct.name}
+          productImage={lastAddedProduct.image}
+          quantity={lastAddedProduct.quantity}
+          totalItems={itemsCount}
+        />
+      )}
     </div>
   );
 }
@@ -1324,7 +1649,12 @@ function NewsletterForm() {
           animate={{ opacity: 1, y: 0 }}
           className="mt-3 text-center text-green-300 text-sm font-medium"
         >
-          ✅ Merci ! Vous êtes maintenant inscrit à notre newsletter.
+          <span className="inline-flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+            Merci ! Vous êtes maintenant inscrit à notre newsletter.
+          </span>
         </motion.div>
       )}
       
