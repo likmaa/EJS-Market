@@ -108,7 +108,9 @@ export function MobileSearchBar({ isOpen, onClose, products = [] }: MobileSearch
     handleSearch(term);
   };
 
-  const clearHistory = () => {
+  const clearHistory = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setSearchHistory([]);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('searchHistory');
@@ -124,19 +126,19 @@ export function MobileSearchBar({ isOpen, onClose, products = [] }: MobileSearch
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/50"
-            onClick={onClose}
           />
 
           <div className="fixed inset-0 flex items-start justify-center pt-16 pointer-events-none">
-            <DialogPanel className="relative w-full max-h-[85vh] pointer-events-auto">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="bg-white rounded-t-3xl shadow-2xl flex flex-col"
-              >
+            <DialogPanel
+              as={motion.div}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ type: 'spring' as const, damping: 30, stiffness: 300 }}
+              className="relative w-full max-h-[85vh] pointer-events-auto bg-white rounded-t-3xl shadow-2xl flex flex-col"
+            >
               {/* Header */}
               <div className="flex items-center gap-3 p-4 border-b border-gray-200">
                 <div className="relative flex-1">
@@ -288,7 +290,9 @@ export function MobileSearchBar({ isOpen, onClose, products = [] }: MobileSearch
                       </h3>
                       <button
                         onClick={clearHistory}
-                        className="text-xs text-violet-electric hover:underline"
+                        type="button"
+                        className="text-xs text-violet-electric hover:underline font-medium px-2 py-1 rounded hover:bg-violet-50 transition-colors"
+                        aria-label="Effacer l'historique de recherche"
                       >
                         Effacer
                       </button>
@@ -323,7 +327,6 @@ export function MobileSearchBar({ isOpen, onClose, products = [] }: MobileSearch
                   </motion.div>
                 )}
               </div>
-              </motion.div>
             </DialogPanel>
           </div>
         </Dialog>

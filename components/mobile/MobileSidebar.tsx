@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 
 interface MobileSidebarProps {
@@ -11,9 +11,18 @@ interface MobileSidebarProps {
   onClose: () => void;
 }
 
+const languages = [
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+];
+
 export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const router = useRouter();
   const [loadingItem, setLoadingItem] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('fr');
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const menuItems = [
     {
       name: 'Be Pro',
@@ -52,8 +61,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       ),
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        // Logique pour changer la langue
-        console.log('Changer la langue');
+        setIsLanguageOpen(!isLanguageOpen);
       },
     },
     {
@@ -66,12 +74,11 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       ),
     },
     {
-      name: 'Paramètres',
-      href: '/settings',
+      name: 'About',
+      href: '/about',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
     },
@@ -99,6 +106,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             <nav className="space-y-1 px-4">
               {menuItems.map((item) => {
                 const isLoading = loadingItem === item.name;
+                const isLanguageItem = item.name === 'Langue';
                 
                 const handleClick = async (e: React.MouseEvent) => {
                   if (item.onClick) {
@@ -123,27 +131,80 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 };
 
                 return (
-                  <button
-                    key={item.name}
-                    onClick={handleClick}
-                    disabled={isLoading}
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-50 hover:text-violet-electric transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span className="text-gray-400 group-hover:text-violet-electric transition-colors flex-shrink-0">
-                      {isLoading ? (
-                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <div key={item.name} className="relative">
+                    <button
+                      onClick={handleClick}
+                      disabled={isLoading}
+                      className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-50 hover:text-violet-electric transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="text-gray-400 group-hover:text-violet-electric transition-colors flex-shrink-0">
+                        {isLoading ? (
+                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : (
+                          item.icon
+                        )}
+                      </span>
+                      <span className="font-medium text-left flex-1">{item.name}</span>
+                      {isLanguageItem && (
+                        <svg
+                          className={`w-4 h-4 text-gray-400 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
-                      ) : (
-                        item.icon
                       )}
-                    </span>
-                    <span className="font-medium text-left flex-1">{item.name}</span>
-                    {isLoading && (
-                      <span className="text-xs text-gray-400">Chargement...</span>
+                      {isLoading && (
+                        <span className="text-xs text-gray-400">Chargement...</span>
+                      )}
+                    </button>
+                    
+                    {/* Dropdown des langues */}
+                    {isLanguageItem && (
+                      <AnimatePresence>
+                        {isLanguageOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pl-12 pr-4 pb-2 space-y-1">
+                              {languages.map((lang) => (
+                                <button
+                                  key={lang.code}
+                                  onClick={() => {
+                                    setSelectedLanguage(lang.code);
+                                    setIsLanguageOpen(false);
+                                    // Ici vous pouvez ajouter la logique pour changer la langue
+                                    console.log('Langue sélectionnée:', lang.code);
+                                  }}
+                                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${
+                                    selectedLanguage === lang.code
+                                      ? 'bg-violet-electric text-white'
+                                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                  }`}
+                                >
+                                  <span className="text-lg">{lang.flag}</span>
+                                  <span className="font-medium">{lang.label}</span>
+                                  {selectedLanguage === lang.code && (
+                                    <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     )}
-                  </button>
+                  </div>
                 );
               })}
             </nav>

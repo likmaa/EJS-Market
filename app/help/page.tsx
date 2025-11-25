@@ -143,10 +143,42 @@ export default function HelpPage() {
   ];
 
   const quickLinks = [
-    { title: 'Suivre ma commande', href: '/tracking', icon: '📦' },
-    { title: 'Politique de retour', href: '/returns', icon: '↩️' },
-    { title: 'Informations de livraison', href: '/shipping', icon: '🚚' },
-    { title: 'Nous contacter', href: '/contact', icon: '✉️' },
+    {
+      title: 'Suivre ma commande',
+      href: '/orders',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Politique de retour',
+      href: '/returns',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Informations de livraison',
+      href: '/shipping',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Nous contacter',
+      href: '/contact',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -185,7 +217,9 @@ export default function HelpPage() {
               <Link href={link.href}>
                 <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow h-full">
                   <CardContent className="p-6 text-center">
-                    <div className="text-3xl mb-2">{link.icon}</div>
+                    <div className="flex items-center justify-center mb-3 text-violet-electric">
+                      {link.icon}
+                    </div>
                     <p className="text-sm font-semibold text-black-deep">{link.title}</p>
                   </CardContent>
                 </Card>

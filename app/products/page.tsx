@@ -5,14 +5,25 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/Card';
-import { 
-  MobileProductCard, 
-  MobileFiltersButton, 
-  MobileFiltersModal, 
-  PullToRefresh 
-} from '@/components/mobile';
 import dynamic from 'next/dynamic';
 import { Toast } from '@/components/Toast';
+
+// Lazy load les composants mobile pour améliorer les performances
+const MobileProductCard = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.MobileProductCard })), {
+  ssr: false,
+});
+
+const MobileFiltersButton = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.MobileFiltersButton })), {
+  ssr: false,
+});
+
+const MobileFiltersModal = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.MobileFiltersModal })), {
+  ssr: false,
+});
+
+const PullToRefresh = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.PullToRefresh })), {
+  ssr: false,
+});
 
 // Lazy load le modal pour améliorer les performances
 const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal').then(mod => ({ default: mod.ProductDetailModal })), {

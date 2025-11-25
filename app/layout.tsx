@@ -1,13 +1,27 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { Header } from "@/components/Header";
 import dynamic from "next/dynamic";
-import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/contexts/CartContext";
-import { CookieConsentModal } from "@/components/CookieConsentModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { ClientLayout } from "@/components/ClientLayout";
 import "./globals.css";
+
+// Lazy load les composants pour améliorer les performances
+const Header = dynamic(() => import("@/components/Header").then(mod => ({ default: mod.Header })), {
+  ssr: true,
+});
+
+const Footer = dynamic(() => import("@/components/Footer").then(mod => ({ default: mod.Footer })), {
+  ssr: false,
+});
+
+const CookieConsentModal = dynamic(() => import("@/components/CookieConsentModal").then(mod => ({ default: mod.CookieConsentModal })), {
+  ssr: false,
+});
+
+const ServiceWorkerRegistration = dynamic(() => import("@/components/ServiceWorkerRegistration").then(mod => ({ default: mod.ServiceWorkerRegistration })), {
+  ssr: false,
+});
 
 // Code splitting : Charger les composants mobile uniquement sur mobile
 const MobileHeader = dynamic(() => import("@/components/mobile").then(mod => ({ default: mod.MobileHeader })), {
@@ -55,25 +69,27 @@ export default function RootLayout({
       <body className={`${plusJakarta.variable} font-sans`}>
         <ErrorBoundary>
           <CartProvider>
-            <ErrorBoundary>
-              <Header />
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <MobileHeader />
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <main className="min-h-screen bg-off-white pb-16 lg:pb-0">{children}</main>
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <Footer />
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <MobileBottomNav />
-            </ErrorBoundary>
-            <ErrorBoundary>
-              <CookieConsentModal />
-            </ErrorBoundary>
-            <ServiceWorkerRegistration />
+            <ClientLayout>
+              <ErrorBoundary>
+                <Header />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <MobileHeader />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <main className="min-h-screen bg-off-white pb-16 lg:pb-0">{children}</main>
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <Footer />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <MobileBottomNav />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <CookieConsentModal />
+              </ErrorBoundary>
+              <ServiceWorkerRegistration />
+            </ClientLayout>
           </CartProvider>
         </ErrorBoundary>
       </body>

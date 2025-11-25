@@ -4,14 +4,30 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import Marquee from 'react-fast-marquee';
 import { Disclosure } from '@headlessui/react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { formatPrice, calculateTTC } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import { Toast } from '@/components/Toast';
-import { MobileProductCard, MobileProductCarousel, MobileFiltersBar } from '@/components/mobile';
+
+// Lazy load les composants lourds
+const Marquee = dynamic(() => import('react-fast-marquee'), {
+  ssr: false,
+  loading: () => <div className="h-20" />,
+});
+
+const MobileProductCard = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.MobileProductCard })), {
+  ssr: false,
+});
+
+const MobileProductCarousel = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.MobileProductCarousel })), {
+  ssr: false,
+});
+
+const MobileFiltersBar = dynamic(() => import('@/components/mobile').then(mod => ({ default: mod.MobileFiltersBar })), {
+  ssr: false,
+});
 
 // Lazy load le modal pour améliorer les performances
 const ProductDetailModal = dynamic(() => import('@/components/ProductDetailModal').then(mod => ({ default: mod.ProductDetailModal })), {
