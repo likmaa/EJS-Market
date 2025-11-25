@@ -135,9 +135,8 @@ export function MobileSearchBar({ isOpen, onClose, products = [] }: MobileSearch
             <DialogPanel
               as={motion.div}
               initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ type: 'spring' as const, damping: 30, stiffness: 300 }}
+              animate={{ opacity: 1, y: 0, transition: { type: 'spring', damping: 30, stiffness: 300 } }}
+              exit={{ opacity: 0, y: -20, transition: { type: 'spring', damping: 30, stiffness: 300 } }}
               className="relative w-full max-h-[85vh] pointer-events-auto bg-white rounded-t-3xl shadow-2xl flex flex-col"
             >
               {/* Header */}
