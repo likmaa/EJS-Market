@@ -1,0 +1,243 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+
+// Données mockées - à remplacer par des appels API
+const mockProducts = [
+  {
+    id: '1',
+    sku: 'APP-IPH-0001',
+    name: 'iPhone 15 Pro',
+    brand: 'Apple',
+    priceHT: 119900,
+    stock: 10,
+    isActive: true,
+    category: 'electronics',
+    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200',
+  },
+  {
+    id: '2',
+    sku: 'SON-PS5-0001',
+    name: 'PlayStation 5',
+    brand: 'Sony',
+    priceHT: 49900,
+    stock: 5,
+    isActive: true,
+    category: 'electronics',
+    image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=200',
+  },
+  {
+    id: '3',
+    sku: 'HUS-ROB-0001',
+    name: 'Robot Tondeuse Automower 430X',
+    brand: 'Husqvarna',
+    priceHT: 249900,
+    stock: 3,
+    isActive: true,
+    category: 'garden',
+    image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200',
+  },
+];
+
+export default function AdminProductsPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterStock, setFilterStock] = useState('all');
+
+  const filteredProducts = mockProducts.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      filterCategory === 'all' || product.category === filterCategory;
+    const matchesStock =
+      filterStock === 'all' ||
+      (filterStock === 'low' && product.stock < 5) ||
+      (filterStock === 'out' && product.stock === 0);
+
+    return matchesSearch && matchesCategory && matchesStock;
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Gestion des Produits</h2>
+          <p className="text-gray-600 mt-1">
+            {filteredProducts.length} produit(s) trouvé(s)
+          </p>
+        </div>
+        <Link href="/admin/products/new">
+          <Button variant="primary" size="lg">
+            <span className="mr-2">➕</span>
+            Ajouter un produit
+          </Button>
+        </Link>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Recherche
+              </label>
+              <input
+                type="text"
+                placeholder="Nom, SKU..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Catégorie
+              </label>
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+              >
+                <option value="all">Toutes</option>
+                <option value="electronics">Électronique</option>
+                <option value="garden">Jardin</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stock
+              </label>
+              <select
+                value={filterStock}
+                onChange={(e) => setFilterStock(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+              >
+                <option value="all">Tous</option>
+                <option value="low">Stock faible (&lt;5)</option>
+                <option value="out">Rupture de stock</option>
+              </select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Products Table */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Produit
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    SKU
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Prix HT
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Stock
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Statut
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredProducts.map((product) => (
+                  <tr key={product.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                          {product.image ? (
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              sizes="48px"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <span>📦</span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {product.name}
+                          </div>
+                          <div className="text-sm text-gray-500">{product.brand}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-gray-900 font-mono">
+                        {product.sku}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm font-medium text-gray-900">
+                        {(product.priceHT / 100).toLocaleString('fr-FR', {
+                          style: 'currency',
+                          currency: 'EUR',
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`text-sm font-medium ${
+                          product.stock === 0
+                            ? 'text-red-600'
+                            : product.stock < 5
+                            ? 'text-orange-600'
+                            : 'text-green-600'
+                        }`}
+                      >
+                        {product.stock}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {product.isActive ? (
+                        <Badge variant="success">Actif</Badge>
+                      ) : (
+                        <Badge variant="error">Inactif</Badge>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/products/${product.id}/edit`}
+                          className="text-violet-electric hover:text-violet-700"
+                        >
+                          ✏️ Modifier
+                        </Link>
+                        <button className="text-red-600 hover:text-red-700">
+                          🗑️ Supprimer
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+

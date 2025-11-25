@@ -37,7 +37,7 @@ export const ORDER_STATUSES = [
 ] as const;
 
 // Rôles utilisateurs
-export const USER_ROLES = ['ADMIN', 'CUSTOMER', 'B2B_CUSTOMER'] as const;
+export const USER_ROLES = ['ADMIN', 'MANAGER', 'CUSTOMER', 'B2B_CUSTOMER'] as const;
 
 // Limites pour le calcul des frais de port
 export const SHIPPING_LIMITS = {

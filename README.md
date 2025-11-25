@@ -53,6 +53,7 @@ Toute la documentation du projet est disponible dans le dossier [`docs/`](./docs
 - [`docs/GITHUB_PUSH.md`](./docs/GITHUB_PUSH.md) - Instructions GitHub
 - [`docs/INSTRUCTIONS_GITHUB.md`](./docs/INSTRUCTIONS_GITHUB.md) - Instructions GitHub supplémentaires
 - [`docs/DIAGNOSTIC_CSS.md`](./docs/DIAGNOSTIC_CSS.md) - Diagnostic CSS
+- [`docs/ADMIN_PANEL.md`](./docs/ADMIN_PANEL.md) - Documentation Panel Admin (rôles, permissions, fonctionnalités)
 
 ## 🔒 Sécurité
 

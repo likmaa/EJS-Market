@@ -137,6 +137,12 @@
 
 ---
 
+## 📚 Documentation Complémentaire
+
+- [`ADMIN_PANEL.md`](./ADMIN_PANEL.md) - Documentation complète du Panel Admin (rôles, permissions, fonctionnalités)
+
+---
+
 ## 📘 1. IDENTITÉ VISUELLE (DESIGN SYSTEM)
 
 ### 🎨 1.1. Palette de Couleurs
