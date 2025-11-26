@@ -38,146 +38,14 @@ import { useCart } from '@/contexts/CartContext';
 
 // Type pour un logo partenaire
 interface PartnerLogo {
+  id: string;
   name: string;
-  local: string;
-  cdn: string;
+  logoPath: string;
+  cdnUrl: string | null;
+  width: number | null;
+  height: number | null;
+  alt: string;
 }
-
-// URLs des logos partenaires depuis CDN (Simple Icons) ou fichiers locaux
-// Électronique & Jardinage
-const partnerLogos: PartnerLogo[] = [
-  // Électronique - Smartphones & Ordinateurs
-  {
-    name: 'Apple',
-    local: '/logos/apple.svg',
-    cdn: 'https://cdn.simpleicons.org/apple/000000',
-  },
-  {
-    name: 'Samsung',
-    local: '/logos/samsung.svg',
-    cdn: 'https://cdn.simpleicons.org/samsung/1428A0',
-  },
-  {
-    name: 'Sony',
-    local: '/logos/sony.svg',
-    cdn: 'https://cdn.simpleicons.org/sony/000000',
-  },
-  {
-    name: 'LG',
-    local: '/logos/lg.svg',
-    cdn: 'https://cdn.simpleicons.org/lg/A50034',
-  },
-  {
-    name: 'Dell',
-    local: '/logos/dell.svg',
-    cdn: 'https://cdn.simpleicons.org/dell/007DB8',
-  },
-  {
-    name: 'HP',
-    local: '/logos/hp.svg',
-    cdn: 'https://cdn.simpleicons.org/hp/0096D6',
-  },
-  {
-    name: 'Lenovo',
-    local: '/logos/lenovo.svg',
-    cdn: 'https://cdn.simpleicons.org/lenovo/E2231A',
-  },
-  {
-    name: 'ASUS',
-    local: '/logos/asus.svg',
-    cdn: 'https://cdn.simpleicons.org/asus/000000',
-  },
-  {
-    name: 'Acer',
-    local: '/logos/acer.svg',
-    cdn: 'https://cdn.simpleicons.org/acer/83B81A',
-  },
-  {
-    name: 'MSI',
-    local: '/logos/msi.svg',
-    cdn: 'https://cdn.simpleicons.org/msi/FF0000',
-  },
-  
-  // Électronique - Photo & Vidéo & Gaming
-  {
-    name: 'Nikon',
-    local: '/logos/nikon.svg',
-    cdn: 'https://cdn.simpleicons.org/nikon/000000',
-  },
-  {
-    name: 'Panasonic',
-    local: '/logos/panasonic.svg',
-    cdn: 'https://cdn.simpleicons.org/panasonic/EB1923',
-  },
-  {
-    name: 'JBL',
-    local: '/logos/jbl.svg',
-    cdn: 'https://cdn.simpleicons.org/jbl/FF3300',
-  },
-  {
-    name: 'Google',
-    local: '/logos/google.svg',
-    cdn: 'https://cdn.simpleicons.org/google/4285F4',
-  },
-  {
-    name: 'PlayStation',
-    local: '/logos/playstation.svg',
-    cdn: 'https://cdn.simpleicons.org/playstation/003087',
-  },
-  {
-    name: 'Intel',
-    local: '/logos/intel.svg',
-    cdn: 'https://cdn.simpleicons.org/intel/0071C5',
-  },
-  {
-    name: 'AMD',
-    local: '/logos/amd.svg',
-    cdn: 'https://cdn.simpleicons.org/amd/ED1C24',
-  },
-  {
-    name: 'NVIDIA',
-    local: '/logos/nvidia.svg',
-    cdn: 'https://cdn.simpleicons.org/nvidia/76B900',
-  },
-  
-  // Jardinage & Outils
-  {
-    name: 'Husqvarna',
-    local: '/logos/husqvarna.svg',
-    cdn: 'https://cdn.simpleicons.org/husqvarna/27378C',
-  },
-  {
-    name: 'STIHL',
-    local: '/logos/stihl.svg',
-    cdn: 'https://cdn.simpleicons.org/stihl/000000',
-  },
-  {
-    name: 'Bosch',
-    local: '/logos/bosch.svg',
-    cdn: 'https://cdn.simpleicons.org/bosch/EA0016',
-  },
-  // Ajout de plus de marques électroniques
-  {
-    name: 'Xiaomi',
-    local: '/logos/xiaomi.svg',
-    cdn: 'https://cdn.simpleicons.org/xiaomi/FF6900',
-  },
-  {
-    name: 'OnePlus',
-    local: '/logos/oneplus.svg',
-    cdn: 'https://cdn.simpleicons.org/oneplus/EB0028',
-  },
-  {
-    name: 'Razer',
-    local: '/logos/razer.svg',
-    cdn: 'https://cdn.simpleicons.org/razer/00FF00',
-  },
-  {
-    name: 'Logitech',
-    local: '/logos/logitech.svg',
-    cdn: 'https://cdn.simpleicons.org/logitech/00B8FC',
-  },
-];
 
 // Composant pour afficher un logo partenaire (essaie local d'abord, puis CDN)
 function PartnerLogoItem({ brand }: { brand: PartnerLogo }) {
@@ -185,10 +53,10 @@ function PartnerLogoItem({ brand }: { brand: PartnerLogo }) {
     <div className="mx-16 flex items-center justify-center h-20 flex-shrink-0">
       <div className="relative opacity-70 hover:opacity-100 transition-all duration-300">
         <Image
-          src={brand.local || brand.cdn}
-          alt={`Logo ${brand.name}`}
-          width={120}
-          height={40}
+          src={brand.logoPath}
+          alt={brand.alt || `Logo ${brand.name}`}
+          width={brand.width || 120}
+          height={brand.height || 40}
           className="h-14 w-auto object-contain transition-all duration-300"
           loading="lazy"
           unoptimized
@@ -204,8 +72,8 @@ function PartnerLogoItem({ brand }: { brand: PartnerLogo }) {
           onError={(e) => {
             // Si le fichier local échoue, utilise le CDN
             const target = e.target as HTMLImageElement;
-            if (brand.local && target.src !== brand.cdn) {
-              target.src = brand.cdn;
+            if (brand.cdnUrl && target.src !== brand.cdnUrl) {
+              target.src = brand.cdnUrl;
             }
           }}
         />
@@ -448,116 +316,215 @@ export default function Home() {
   const glowXPercent = useTransform(smoothX, [-0.5, 0.5], [20, 80]);
   const glowYPercent = useTransform(smoothY, [-0.5, 0.5], [20, 80]);
   
-  // Images immersives (produits tech uniquement)
-  const immersiveImages = useMemo(() => [
-    { 
-      id: 1, 
-      url: '/img1.jpg', 
-      name: 'iPhone 15 Pro Max',
-    },
-    { 
-      id: 2, 
-      url: '/img2.jpg', 
-      name: 'MacBook Pro M3',
-    },
-    { 
-      id: 3, 
-      url: '/img3.jpg', 
-      name: 'PlayStation 5',
-    },
-  ], []);
+  // Charger les partenaires depuis l'API
+  const [partnerLogos, setPartnerLogos] = useState<PartnerLogo[]>([]);
+
+  // Charger les témoignages depuis l'API
+  const [testimonials, setTestimonials] = useState<Array<{
+    id: string;
+    name: string;
+    initial: string;
+    rating: number;
+    text: string;
+    product: string;
+    date: string;
+  }>>([]);
   
-  // Témoignages enrichis
-  const testimonials = useMemo(() => [
-    { 
-      name: 'Marie L.', 
-      initial: 'ML',
-      rating: 5, 
-      text: 'Livraison rapide et produit de qualité. Je recommande vivement !',
-      product: 'iPhone 15 Pro',
-      date: 'Il y a 2 semaines',
-    },
-    { 
-      name: 'Jean D.', 
-      initial: 'JD',
-      rating: 5, 
-      text: 'Excellent service client et robot tondeuse parfait. Mon jardin n\'a jamais été aussi beau !',
-      product: 'Robot Tondeuse Automower',
-      date: 'Il y a 1 mois',
-    },
-    { 
-      name: 'Sophie M.', 
-      initial: 'SM',
-      rating: 5, 
-      text: 'Très satisfaite de mon iPhone 15 Pro, merci pour ce service impeccable !',
-      product: 'iPhone 15 Pro',
-      date: 'Il y a 3 semaines',
-    },
-    { 
-      name: 'Thomas B.', 
-      initial: 'TB',
-      rating: 5, 
-      text: 'MacBook Pro M3 exceptionnel ! Livraison express et emballage soigné.',
-      product: 'MacBook Pro M3',
-      date: 'Il y a 5 jours',
-    },
-    { 
-      name: 'Laura K.', 
-      initial: 'LK',
-      rating: 5, 
-      text: 'PlayStation 5 enfin trouvée ici ! Commande facile et suivi parfait.',
-      product: 'PlayStation 5',
-      date: 'Il y a 1 semaine',
-    },
-  ], []);
+  // Charger les images hero depuis l'API
+  const [techImages, setTechImages] = useState<Array<{
+    id: string;
+    url: string;
+    name: string;
+    price: number | null;
+    available: boolean;
+    mediaType?: 'image' | 'video';
+    videoUrl?: string | null;
+    thumbnailUrl?: string | null;
+  }>>([]);
   
-  const techImages = useMemo(() => [
-    { 
-      id: 1, 
-      url: '/img1.jpg', 
-      name: 'iPhone 15 Pro Max',
-      price: 1399,
-      available: true
-    },
-    { 
-      id: 2, 
-      url: '/img2.jpg', 
-      name: 'MacBook Pro M3',
-      price: 2499,
-      available: true
-    },
-    { 
-      id: 3, 
-      url: '/img3.jpg', 
-      name: 'PlayStation 5',
-      price: 499,
-      available: false
-    },
-  ], []);
-  
-  const jardinImages = useMemo(() => [
-    { 
-      id: 1, 
-      url: '/jard1.jpg', 
-      name: 'Robot Tondeuse Automower 430X',
-      price: 2499,
-      available: true
-    },
-    { 
-      id: 2, 
-      url: '/jard2.jpg', 
-      name: 'Tondeuse Robot Gardena',
-      price: 899,
-      available: true
-    },
-    { 
-      id: 3, 
-      url: '/jard3.jpg', 
-      name: 'Tronçonneuse STIHL',
-      price: 349,
-      available: true
-    },
-  ], []);
+  const [jardinImages, setJardinImages] = useState<Array<{
+    id: string;
+    url: string;
+    name: string;
+    price: number | null;
+    available: boolean;
+    mediaType?: 'image' | 'video';
+    videoUrl?: string | null;
+    thumbnailUrl?: string | null;
+  }>>([]);
+
+  const [immersiveImages, setImmersiveImages] = useState<Array<{
+    id: string;
+    url: string;
+    name: string;
+    mediaType?: 'image' | 'video';
+    videoUrl?: string | null;
+    thumbnailUrl?: string | null;
+  }>>([]);
+
+  // Charger les images hero
+  useEffect(() => {
+    const fetchHeroImages = async () => {
+      try {
+        const [techRes, gardenRes] = await Promise.all([
+          fetch('/api/content/hero-images?type=tech', {
+            cache: 'force-cache', // Utiliser le cache du navigateur
+          }),
+          fetch('/api/content/hero-images?type=garden', {
+            cache: 'force-cache', // Utiliser le cache du navigateur
+          }),
+        ]);
+
+        if (techRes.ok) {
+          const techData = await techRes.json();
+          setTechImages(techData.images.map((img: any) => ({
+            id: img.id,
+            url: img.mediaType === 'video' ? (img.thumbnailUrl || img.videoUrl) : img.imageUrl,
+            name: img.name,
+            price: img.price ? img.price / 100 : null,
+            available: img.available,
+            mediaType: img.mediaType || 'image',
+            videoUrl: img.videoUrl,
+            thumbnailUrl: img.thumbnailUrl,
+          })));
+        }
+
+        if (gardenRes.ok) {
+          const gardenData = await gardenRes.json();
+          const mappedImages = gardenData.images
+            .filter((img: any) => img.imageUrl || (img.mediaType === 'video' && img.videoUrl))
+            .map((img: any) => ({
+              id: img.id,
+              url: img.mediaType === 'video' ? (img.thumbnailUrl || img.videoUrl || '') : (img.imageUrl || ''),
+              name: img.name,
+              price: img.price ? img.price / 100 : null,
+              available: img.available,
+              mediaType: img.mediaType || 'image',
+              videoUrl: img.videoUrl,
+              thumbnailUrl: img.thumbnailUrl,
+            }));
+          setJardinImages(mappedImages);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des images hero:', error);
+        // Fallback sur les données statiques si l'API échoue
+        setTechImages([
+          { id: '1', url: '/img1.jpg', name: 'iPhone 15 Pro Max', price: 1399, available: true, mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+          { id: '2', url: '/img2.jpg', name: 'MacBook Pro M3', price: 2499, available: true, mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+          { id: '3', url: '/img3.jpg', name: 'PlayStation 5', price: 499, available: false, mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+        ]);
+        setJardinImages([
+          { id: '1', url: '/jard1.jpg', name: 'Robot Tondeuse Automower 430X', price: 2499, available: true, mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+          { id: '2', url: '/jard2.jpg', name: 'Tondeuse Robot Gardena', price: 899, available: true, mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+          { id: '3', url: '/jard3.jpg', name: 'Tronçonneuse STIHL', price: 349, available: true, mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+        ]);
+      }
+    };
+
+    fetchHeroImages();
+  }, []);
+
+  // Charger les images immersives (avec cache)
+  useEffect(() => {
+    const fetchImmersiveImages = async () => {
+      try {
+        const res = await fetch('/api/content/immersive-images', {
+          cache: 'force-cache', // Utiliser le cache du navigateur
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setImmersiveImages(data.images.map((img: any) => ({
+            id: img.id,
+            url: img.mediaType === 'video' ? (img.thumbnailUrl || img.videoUrl) : img.imageUrl,
+            name: img.name,
+            mediaType: img.mediaType || 'image',
+            videoUrl: img.videoUrl,
+            thumbnailUrl: img.thumbnailUrl,
+          })));
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des images immersives:', error);
+        // Fallback sur les données statiques
+        setImmersiveImages([
+          { id: '1', url: '/img1.jpg', name: 'iPhone 15 Pro Max', mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+          { id: '2', url: '/img2.jpg', name: 'MacBook Pro M3', mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+          { id: '3', url: '/img3.jpg', name: 'PlayStation 5', mediaType: 'image' as const, videoUrl: null, thumbnailUrl: null },
+        ]);
+      }
+    };
+
+    fetchImmersiveImages();
+  }, []);
+
+  // Charger les partenaires (avec cache)
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const res = await fetch('/api/content/partners', {
+          cache: 'force-cache', // Utiliser le cache du navigateur
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setPartnerLogos(data.partners.map((partner: any) => ({
+            id: partner.id,
+            name: partner.name,
+            logoPath: partner.logoPath,
+            cdnUrl: partner.cdnUrl,
+            width: partner.width,
+            height: partner.height,
+            alt: partner.alt,
+          })));
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des partenaires:', error);
+        // Fallback sur les données statiques si l'API échoue
+        setPartnerLogos([
+          { id: '1', name: 'Apple', logoPath: '/logos/apple.svg', cdnUrl: 'https://cdn.simpleicons.org/apple/000000', width: 120, height: 40, alt: 'Logo Apple' },
+          { id: '2', name: 'Samsung', logoPath: '/logos/samsung.svg', cdnUrl: 'https://cdn.simpleicons.org/samsung/1428A0', width: 120, height: 40, alt: 'Logo Samsung' },
+          { id: '3', name: 'Sony', logoPath: '/logos/sony.svg', cdnUrl: 'https://cdn.simpleicons.org/sony/000000', width: 120, height: 40, alt: 'Logo Sony' },
+        ]);
+      }
+    };
+
+    fetchPartners();
+  }, []);
+
+  // Charger les témoignages (avec cache)
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch('/api/content/testimonials', {
+          cache: 'force-cache', // Utiliser le cache du navigateur
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTestimonials(data.testimonials.map((testimonial: any) => {
+            const text = typeof testimonial.text === 'string' 
+              ? JSON.parse(testimonial.text) 
+              : testimonial.text;
+            return {
+              id: testimonial.id,
+              name: testimonial.name,
+              initial: testimonial.initial,
+              rating: testimonial.rating,
+              text: text?.fr || text || '',
+              product: testimonial.product,
+              date: testimonial.date,
+            };
+          }));
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des témoignages:', error);
+        // Fallback sur les données statiques si l'API échoue
+        setTestimonials([
+          { id: '1', name: 'Marie L.', initial: 'ML', rating: 5, text: 'Livraison rapide et produit de qualité. Je recommande vivement !', product: 'iPhone 15 Pro', date: 'Il y a 2 semaines' },
+          { id: '2', name: 'Jean D.', initial: 'JD', rating: 5, text: 'Excellent service client et robot tondeuse parfait. Mon jardin n\'a jamais été aussi beau !', product: 'Robot Tondeuse Automower', date: 'Il y a 1 mois' },
+        ]);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
 
   // Fonction pour obtenir l'index suivant dans un carrousel
   const getNextIndex = useCallback((current: number, length: number) => {
@@ -581,15 +548,17 @@ export default function Home() {
     
     // Carrousel Jardin - démarre avec un délai initial de 2 secondes, puis change toutes les 8.5 secondes
     // Des intervalles différents (8s vs 8.5s) garantissent qu'ils ne se synchroniseront jamais
-    setTimeout(() => {
-      // Première transition après 2 secondes
-      setCurrentJardinIndex((prev) => (prev + 1) % jardinImages.length);
-      
-      // Puis continue toutes les 8.5 secondes (différent de 8 secondes)
-      jardinIntervalRef.current = setInterval(() => {
+    if (jardinImages.length > 0) {
+      setTimeout(() => {
+        // Première transition après 2 secondes
         setCurrentJardinIndex((prev) => (prev + 1) % jardinImages.length);
-      }, 8500); // 8.5 secondes - différent de l'intervalle Tech
-    }, 2000); // Délai initial de 2 secondes
+        
+        // Puis continue toutes les 8.5 secondes (différent de 8 secondes)
+        jardinIntervalRef.current = setInterval(() => {
+          setCurrentJardinIndex((prev) => (prev + 1) % jardinImages.length);
+        }, 8500); // 8.5 secondes - différent de l'intervalle Tech
+      }, 2000); // Délai initial de 2 secondes
+    }
     
     return () => {
       if (techIntervalRef.current) {
@@ -944,16 +913,28 @@ export default function Home() {
                     >
                           <div className="relative w-full h-full bg-gray-200">
                             {shouldLoad && (
-                        <Image
-                          src={product.url}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                                sizes="(max-width: 1024px) 100vw, 50vw"
-                          priority={index === 0}
-                                loading={index === 0 ? 'eager' : 'lazy'}
-                                quality={85}
-                              />
+                              product.mediaType === 'video' && product.videoUrl ? (
+                                <video
+                                  src={product.videoUrl}
+                                  className="w-full h-full object-cover"
+                                  autoPlay
+                                  loop
+                                  muted
+                                  playsInline
+                                  poster={product.thumbnailUrl || product.url}
+                                />
+                              ) : (
+                                <Image
+                                  src={product.url}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 1024px) 100vw, 50vw"
+                                  priority={index === 0}
+                                  loading={index === 0 ? 'eager' : 'lazy'}
+                                  quality={85}
+                                />
+                              )
                             )}
                           </div>
                         </div>
@@ -1011,12 +992,21 @@ export default function Home() {
             {/* Carte 2 - Carrousel Jardin */}
             <div className="h-[700px] overflow-hidden relative group bg-white rounded-lg border border-gray-200 transition-all duration-300 hover:scale-[1.02] hover:border-green-garden/30">
               <div className="relative h-full w-full">
-                <div className="overflow-hidden relative h-full w-full">
-                  <div 
-                    className="flex h-full transition-transform duration-700 ease-in-out"
-                    style={{ transform: `translateX(-${currentJardinIndex * 100}%)` }}
-                  >
-                    {jardinImages.map((product, index) => {
+                {jardinImages.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-garden mx-auto mb-4"></div>
+                      <p className="text-gray-500">Chargement des produits jardin...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="overflow-hidden relative h-full w-full">
+                      <div 
+                        className="flex h-full transition-transform duration-700 ease-in-out"
+                        style={{ transform: `translateX(-${currentJardinIndex * 100}%)` }}
+                      >
+                        {jardinImages.map((product, index) => {
                       const isVisible = index === currentJardinIndex;
                       const isNext = index === getNextIndex(currentJardinIndex, jardinImages.length);
                       // Charger seulement l'image visible et la suivante
@@ -1029,69 +1019,87 @@ export default function Home() {
                     >
                           <div className="relative w-full h-full bg-gray-200" style={{ aspectRatio: '1 / 1' }}>
                             {shouldLoad && (
-                        <Image
-                          src={product.url}
-                          alt={`${product.name} - Produit jardin`}
-                          fill
-                          className="object-cover"
-                                sizes="(max-width: 1024px) 100vw, 50vw"
-                          priority={index === 0}
-                                loading={index === 0 ? 'eager' : 'lazy'}
-                                quality={85}
-                                placeholder="blur"
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                              />
+                              product.mediaType === 'video' && product.videoUrl ? (
+                                <video
+                                  src={product.videoUrl}
+                                  className="w-full h-full object-cover"
+                                  autoPlay
+                                  loop
+                                  muted
+                                  playsInline
+                                  poster={product.thumbnailUrl || product.url}
+                                />
+                              ) : (
+                                <Image
+                                  src={product.url}
+                                  alt={`${product.name} - Produit jardin`}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 1024px) 100vw, 50vw"
+                                  priority={index === 0}
+                                  loading={index === 0 ? 'eager' : 'lazy'}
+                                  quality={85}
+                                  placeholder="blur"
+                                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                />
+                              )
                             )}
                           </div>
                         </div>
                       );
-                    })}
-                  </div>
-                  {/* Informations produit en bas */}
-                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-white text-xl font-bold mb-2">
-                          {jardinImages[currentJardinIndex]?.name}
-                        </h3>
-                        <div className="flex items-center gap-3 mb-3">
-                          <p className="text-white text-2xl font-bold">
-                            {jardinImages[currentJardinIndex]?.price ? formatPrice(jardinImages[currentJardinIndex].price * 100) : ''}
-                          </p>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            jardinImages[currentJardinIndex]?.available 
-                              ? 'bg-green-500 text-white' 
-                              : 'bg-red-500 text-white'
-                          }`}>
-                            {jardinImages[currentJardinIndex]?.available ? 'En stock' : 'Rupture de stock'}
-                          </span>
+                        })}
+                      </div>
+                      {/* Informations produit en bas */}
+                      <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <h3 className="text-white text-xl font-bold mb-2">
+                              {jardinImages[currentJardinIndex]?.name || 'Chargement...'}
+                            </h3>
+                            <div className="flex items-center gap-3 mb-3">
+                              <p className="text-white text-2xl font-bold">
+                                {jardinImages[currentJardinIndex]?.price ? formatPrice(jardinImages[currentJardinIndex].price * 100) : ''}
+                              </p>
+                              {jardinImages[currentJardinIndex] && (
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  jardinImages[currentJardinIndex].available 
+                                    ? 'bg-green-500 text-white' 
+                                    : 'bg-red-500 text-white'
+                                }`}>
+                                  {jardinImages[currentJardinIndex].available ? 'En stock' : 'Rupture de stock'}
+                                </span>
+                              )}
+                            </div>
+                            {jardinImages[currentJardinIndex] && (
+                              <Link 
+                                href={`/products/${jardinImages[currentJardinIndex].id}`}
+                                className="inline-block text-sm text-violet-electric hover:underline font-normal"
+                                aria-label={`Voir les détails de ${jardinImages[currentJardinIndex].name}`}
+                              >
+                                Voir produit
+                              </Link>
+                            )}
+                          </div>
                         </div>
-                        <Link 
-                          href={`/products/${jardinImages[currentJardinIndex]?.id}`}
-                          className="inline-block text-sm text-violet-electric hover:underline font-normal"
-                          aria-label={`Voir les détails de ${jardinImages[currentJardinIndex]?.name}`}
-                        >
-                          Voir produit
-                        </Link>
+                      </div>
+                      
+                      {/* Indicateurs */}
+                      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                        {jardinImages.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentJardinIndex(index)}
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              index === currentJardinIndex ? 'w-8 bg-green-garden' : 'w-2 bg-white/50 hover:bg-white/75'
+                            }`}
+                            aria-label={`Afficher le produit ${index + 1}`}
+                            aria-current={index === currentJardinIndex ? 'true' : 'false'}
+                          />
+                        ))}
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Indicateurs */}
-                  <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-                    {jardinImages.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentJardinIndex(index)}
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                          index === currentJardinIndex ? 'w-8 bg-green-garden' : 'w-2 bg-white/50 hover:bg-white/75'
-                        }`}
-                        aria-label={`Afficher le produit ${index + 1}`}
-                        aria-current={index === currentJardinIndex ? 'true' : 'false'}
-                      />
-                    ))}
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -1252,7 +1260,7 @@ export default function Home() {
 
       {/* Section Immersive 3D - Produits Tech - Masquée sur mobile */}
       <section 
-        className="hidden md:block relative w-full h-[90vh] min-h-[700px] overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black"
+        className="hidden md:block relative w-full h-screen min-h-[800px] overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -1288,18 +1296,33 @@ export default function Home() {
                   }}
                 >
                   <div className="relative w-full h-full">
-                    <Image
-                      src={product.url}
-                      alt={product.name}
-                      fill
-                      className="object-cover"
-                      sizes="100vw"
-                      priority={index === 0}
-                      quality={90}
-                      style={{
-                        filter: 'brightness(0.7) contrast(1.1)',
-                      }}
-                    />
+                    {product.mediaType === 'video' && product.videoUrl ? (
+                      <video
+                        src={product.videoUrl}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        poster={product.thumbnailUrl || product.url}
+                        style={{
+                          filter: 'brightness(0.7) contrast(1.1)',
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        src={product.url}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                        priority={index === 0}
+                        quality={90}
+                        style={{
+                          filter: 'brightness(0.7) contrast(1.1)',
+                        }}
+                      />
+                    )}
                     {/* Overlay gradient pour améliorer la lisibilité */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   </div>
@@ -1386,55 +1409,61 @@ export default function Home() {
               pauseOnHover={true}
               className="py-4"
             >
-              {[...testimonials, ...testimonials].map((testimonial, index) => (
-                <div key={index} className="mx-4 w-[350px] flex-shrink-0">
-                  <Card className="h-full bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <CardContent className="p-8 flex flex-col h-full">
-                      {/* Avatar et nom */}
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-14 h-14 bg-violet-electric/10 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-violet-electric font-bold text-lg">
-                            {testimonial.initial}
-                          </span>
+              {testimonials.length > 0 ? (
+                [...testimonials, ...testimonials].map((testimonial, index) => (
+                  <div key={`${testimonial.id}-${index}`} className="mx-4 w-[350px] flex-shrink-0">
+                    <Card className="h-full bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <CardContent className="p-8 flex flex-col h-full">
+                        {/* Avatar et nom */}
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="w-14 h-14 bg-violet-electric/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-violet-electric font-bold text-lg">
+                              {testimonial.initial}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-lg text-black-deep mb-1">
+                              {testimonial.name}
+                            </p>
+                            <p className="text-sm text-gray-500 truncate">
+                              {testimonial.product}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-lg text-black-deep mb-1">
-                            {testimonial.name}
-                          </p>
-                          <p className="text-sm text-gray-500 truncate">
-                            {testimonial.product}
-                          </p>
+                        
+                        {/* Étoiles */}
+                        <div className="flex gap-1 mb-4">
+                          {[...Array(testimonial.rating)].map((_, j) => (
+                            <svg
+                              key={j}
+                              className="w-5 h-5 text-yellow-400 fill-current flex-shrink-0"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                            </svg>
+                          ))}
                         </div>
-                      </div>
-                      
-                      {/* Étoiles */}
-                      <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, j) => (
-                          <svg
-                            key={j}
-                            className="w-5 h-5 text-yellow-400 fill-current flex-shrink-0"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                          </svg>
-                    ))}
-                  </div>
-                      
-                      {/* Commentaire */}
-                      <p className="text-gray-700 mb-6 italic text-base leading-relaxed flex-1">
-                        &quot;{testimonial.text}&quot;
-                      </p>
-                      
-                      {/* Date */}
-                      <div className="pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-500">
-                          {testimonial.date}
+                        
+                        {/* Commentaire */}
+                        <p className="text-gray-700 mb-6 italic text-base leading-relaxed flex-1">
+                          &quot;{testimonial.text}&quot;
                         </p>
-                      </div>
-                </CardContent>
-              </Card>
+                        
+                        {/* Date */}
+                        <div className="pt-4 border-t border-gray-200">
+                          <p className="text-sm text-gray-500">
+                            {testimonial.date}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Chargement des témoignages...
                 </div>
-            ))}
+              )}
             </Marquee>
           </div>
         </div>

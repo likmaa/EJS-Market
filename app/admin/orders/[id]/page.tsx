@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -77,6 +78,12 @@ export default function OrderDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const order = mockOrder; // TODO: Récupérer depuis l'API avec l'id
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [isProcessingRefund, setIsProcessingRefund] = useState(false);
+  const [refundData, setRefundData] = useState({
+    amount: '',
+    reason: '',
+  });
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -88,6 +95,39 @@ export default function OrderDetailPage() {
       minute: '2-digit',
     }).format(date);
   };
+
+  const handleRefund = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessingRefund(true);
+
+    try {
+      const response = await fetch(`/api/admin/orders/${id}/refund`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: refundData.amount ? Math.round(parseFloat(refundData.amount) * 100) : undefined,
+          reason: refundData.reason,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erreur lors du remboursement');
+      }
+
+      const data = await response.json();
+      alert(data.message);
+      setShowRefundModal(false);
+      setRefundData({ amount: '', reason: '' });
+      // TODO: Recharger les données de la commande
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erreur lors du remboursement');
+    } finally {
+      setIsProcessingRefund(false);
+    }
+  };
+
+  const canRefund = order.status !== 'REFUNDED' && order.status !== 'CANCELLED' && order.status === 'PAID';
 
   return (
     <div className="space-y-6">
@@ -248,10 +288,84 @@ export default function OrderDetailPage() {
                   </span>
                 </div>
               </div>
+              {canRefund && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <Button
+                    variant="outline"
+                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                    onClick={() => setShowRefundModal(true)}
+                  >
+                    Effectuer un remboursement
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Modal de remboursement */}
+      {showRefundModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Effectuer un remboursement</h3>
+            <form onSubmit={handleRefund} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Montant (€) - Laisser vide pour remboursement total
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max={(order.totalTTC / 100).toFixed(2)}
+                  value={refundData.amount}
+                  onChange={(e) => setRefundData({ ...refundData, amount: e.target.value })}
+                  placeholder={`Max: ${(order.totalTTC / 100).toFixed(2)}€`}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Montant total: {(order.totalTTC / 100).toFixed(2)}€
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Raison du remboursement *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={refundData.reason}
+                  onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })}
+                  placeholder="Ex: Produit défectueux, demande client, etc."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric"
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                  disabled={isProcessingRefund}
+                >
+                  {isProcessingRefund ? 'Traitement...' : 'Confirmer le remboursement'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setShowRefundModal(false);
+                    setRefundData({ amount: '', reason: '' });
+                  }}
+                >
+                  Annuler
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,147 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { prisma } from '@/lib/prisma';
+import { canAccessAdmin, getUserPermissions } from '@/lib/auth';
+import { canViewAllStats, canViewSalesStats } from '@/lib/manager-permissions';
+
+// GET - Statistiques
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+
+    if (!session || !canAccessAdmin(session.user.role)) {
+      return NextResponse.json(
+        { error: 'Non autorisé' },
+        { status: 403 }
+      );
+    }
+
+    const permissions = getUserPermissions(session.user.role);
+    const canViewAll = canViewAllStats(session.user.role);
+    const canViewSales = canViewSalesStats(session.user.role);
+    
+    if (!canViewSales) {
+      return NextResponse.json(
+        { error: 'Permission refusée' },
+        { status: 403 }
+      );
+    }
+    
+    const now = new Date();
+    const today = new Date(now.setHours(0, 0, 0, 0));
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const yearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+    // Revenus
+    const revenueToday = await prisma.order.aggregate({
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
+        createdAt: { gte: today },
+      },
+      _sum: { totalTTC: true },
+    });
+
+    const revenueWeek = await prisma.order.aggregate({
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
+        createdAt: { gte: weekAgo },
+      },
+      _sum: { totalTTC: true },
+    });
+
+    const revenueMonth = await prisma.order.aggregate({
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
+        createdAt: { gte: monthAgo },
+      },
+      _sum: { totalTTC: true },
+    });
+
+    const revenueYear = await prisma.order.aggregate({
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
+        createdAt: { gte: yearAgo },
+      },
+      _sum: { totalTTC: true },
+    });
+
+    // Commandes
+    const ordersToday = await prisma.order.count({
+      where: { createdAt: { gte: today } },
+    });
+
+    const ordersWeek = await prisma.order.count({
+      where: { createdAt: { gte: weekAgo } },
+    });
+
+    const ordersMonth = await prisma.order.count({
+      where: { createdAt: { gte: monthAgo } },
+    });
+
+    // Produits
+    const totalProducts = await prisma.product.count();
+    const lowStockProducts = await prisma.product.count({
+      where: { stock: { lt: 5 } },
+    });
+
+    // Commandes en attente
+    const pendingOrders = await prisma.order.count({
+      where: { status: 'PENDING' },
+    });
+
+    // Top produits (si permissions - ADMIN uniquement)
+    let topProducts: any[] = [];
+    if (canViewAll) {
+      const topProductsData = await prisma.orderItem.groupBy({
+        by: ['productId'],
+        _sum: { quantity: true },
+        _count: true,
+        orderBy: { _sum: { quantity: 'desc' } },
+        take: 5,
+      });
+
+      topProducts = await Promise.all(
+        topProductsData.map(async (item) => {
+          const product = await prisma.product.findUnique({
+            where: { id: item.productId },
+            select: { id: true, name: true, priceHT: true },
+          });
+          return {
+            productId: item.productId,
+            product,
+            sales: item._sum.quantity || 0,
+            orders: item._count,
+          };
+        })
+      );
+    }
+
+    return NextResponse.json({
+      revenue: {
+        today: revenueToday._sum.totalTTC || 0,
+        week: revenueWeek._sum.totalTTC || 0,
+        month: revenueMonth._sum.totalTTC || 0,
+        year: revenueYear._sum.totalTTC || 0,
+      },
+      orders: {
+        today: ordersToday,
+        week: ordersWeek,
+        month: ordersMonth,
+      },
+      products: {
+        total: totalProducts,
+        lowStock: lowStockProducts,
+      },
+      pendingOrders,
+      topProducts,
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des statistiques:', error);
+    return NextResponse.json(
+      { error: 'Erreur serveur' },
+      { status: 500 }
+    );
+  }
+}
+

@@ -50,3 +50,7 @@ next-env.d.ts
 # /assets/video/*
 # /assets/other/*
 # !/assets/README.md
+
+# Uploads utilisateurs
+/public/uploads/*
+!/public/uploads/.gitkeep

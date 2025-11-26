@@ -67,6 +67,7 @@ Le système distingue **trois types d'utilisateurs** avec des permissions diffé
 - ✅ Gestion des catégories
 - ❌ Gestion des utilisateurs
 - ❌ Configuration du site
+- ❌ Gestion du contenu (partenaires, témoignages, images)
 - ❌ Gestion des remboursements
 - ❌ Export de données sensibles
 
