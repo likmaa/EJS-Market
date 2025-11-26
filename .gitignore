@@ -54,3 +54,6 @@ next-env.d.ts
 # Uploads utilisateurs
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Documentation (locale uniquement)
+/docs/
