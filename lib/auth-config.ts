@@ -14,10 +14,13 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.error('[NextAuth] Email ou mot de passe manquant');
           return null;
         }
 
         try {
+          console.log('[NextAuth] Tentative de connexion pour:', credentials.email);
+          
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email as string,
@@ -25,8 +28,11 @@ export const authOptions = {
           });
 
           if (!user) {
+            console.error('[NextAuth] Utilisateur introuvable:', credentials.email);
             return null;
           }
+
+          console.log('[NextAuth] Utilisateur trouvé:', user.email, 'Rôle:', user.role);
 
           const isPasswordValid = await bcrypt.compare(
             credentials.password as string,
@@ -34,9 +40,11 @@ export const authOptions = {
           );
 
           if (!isPasswordValid) {
+            console.error('[NextAuth] Mot de passe invalide pour:', credentials.email);
             return null;
           }
 
+          console.log('[NextAuth] Authentification réussie pour:', credentials.email);
           return {
             id: user.id,
             email: user.email,
@@ -44,7 +52,11 @@ export const authOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error('Erreur lors de l\'authentification:', error);
+          console.error('[NextAuth] Erreur lors de l\'authentification:', error);
+          if (error instanceof Error) {
+            console.error('[NextAuth] Message d\'erreur:', error.message);
+            console.error('[NextAuth] Stack:', error.stack);
+          }
           return null;
         }
       },
