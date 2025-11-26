@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth-config';
 import { prisma } from '@/lib/prisma';
 import { canAccessAdmin } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Liste des commandes
 export async function GET(request: NextRequest) {
   try {

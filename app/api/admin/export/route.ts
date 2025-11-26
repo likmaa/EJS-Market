@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth-config';
 import { prisma } from '@/lib/prisma';
 import { canAccessAdmin, getUserPermissions } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Export de données
 export async function GET(request: NextRequest) {
   try {

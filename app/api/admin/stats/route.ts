@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { canAccessAdmin, getUserPermissions } from '@/lib/auth';
 import { canViewAllStats, canViewSalesStats } from '@/lib/manager-permissions';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Statistiques
 export async function GET(request: NextRequest) {
   try {

@@ -4,6 +4,8 @@ import { isAdmin } from '@/lib/auth';
 import { getContentHistory } from '@/lib/content-history';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const historyQuerySchema = z.object({
   contentType: z.enum(['partner', 'testimonial', 'heroImage', 'immersiveImage']),
   contentId: z.string(),
