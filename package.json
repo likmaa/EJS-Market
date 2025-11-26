@@ -17,7 +17,8 @@
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:seed": "dotenv -e .env.local -- tsx prisma/seed.ts",
-    "create:manager": "dotenv -e .env.local -- tsx scripts/create-manager.ts"
+    "create:manager": "dotenv -e .env.local -- tsx scripts/create-manager.ts",
+    "reset:admin": "dotenv -e .env.local -- tsx scripts/reset-admin-password.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
