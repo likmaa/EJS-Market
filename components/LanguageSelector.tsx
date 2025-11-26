@@ -45,15 +45,19 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
       }
 
       // Ne pas fermer si le clic est dans le header (pour ne pas bloquer les autres boutons)
-      const header = document.querySelector('header');
-      if (header && header.contains(target)) {
-        return;
+      if (typeof document !== 'undefined') {
+        const header = document.querySelector('header');
+        if (header && header.contains(target)) {
+          return;
+        }
       }
 
       setIsOpen(false);
     }
 
     // Utiliser un délai pour éviter les conflits
+    if (typeof document === 'undefined') return;
+    
     const timeoutId = setTimeout(() => {
       document.addEventListener('click', handleClickOutside);
     }, 100);
@@ -66,8 +70,10 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
 
   // Récupérer la langue depuis localStorage ou navigator
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedLang = localStorage.getItem('preferred-language') || 
-                     navigator.language.split('-')[0] || 
+                     (navigator.language ? navigator.language.split('-')[0] : 'fr') || 
                      'fr';
     
     if (SUPPORTED_LANGUAGES.includes(savedLang as any)) {
@@ -77,7 +83,9 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
 
   const handleLanguageChange = (lang: string) => {
     setCurrentLang(lang);
-    localStorage.setItem('preferred-language', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preferred-language', lang);
+    }
     setIsOpen(false);
     
     // TODO: Intégrer avec next-intl pour changer la langue
