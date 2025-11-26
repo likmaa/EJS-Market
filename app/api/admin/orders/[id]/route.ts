@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth-config';
 import { prisma } from '@/lib/prisma';
 import { canAccessAdmin } from '@/lib/auth';
 import { OrderStatus } from '@prisma/client';
@@ -34,7 +34,6 @@ export async function GET(
             id: true,
             email: true,
             name: true,
-            phone: true,
           },
         },
         items: {

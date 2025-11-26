@@ -47,7 +47,7 @@ export default function HeroImagesPage() {
 
   useEffect(() => {
     fetchImages();
-  }, [filterType]);
+  }, [filterType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchImages = async () => {
     setIsLoading(true);

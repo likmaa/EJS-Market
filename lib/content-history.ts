@@ -20,9 +20,9 @@ export async function logContentChange(
         contentType,
         contentId,
         action,
-        changes: changes ? { changes } : null,
-        userId: userId || null,
-        userName: userName || null,
+        changes: changes ? (JSON.parse(JSON.stringify({ changes })) as any) : null,
+        userId: userId ?? null,
+        userName: userName ?? null,
       },
     });
   } catch (error) {

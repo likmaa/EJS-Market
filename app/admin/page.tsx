@@ -195,7 +195,7 @@ export default function AdminDashboard() {
               >
                 <span className="text-xl">⚠️</span>
                 <span className="font-medium">
-                  Produits en stock faible ({stats.lowStock})
+                  Produits en stock faible ({stats.products?.lowStock || 0})
                 </span>
               </Link>
             </div>

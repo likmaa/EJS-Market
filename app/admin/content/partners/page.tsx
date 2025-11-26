@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { SortableList } from '@/components/admin/SortableList';
+import { ContentPreview } from '@/components/admin/ContentPreview';
+import { ContentHistory } from '@/components/admin/ContentHistory';
 
 interface Partner {
   id: string;
@@ -158,6 +160,30 @@ export default function PartnersPage() {
       fetchPartners();
     } catch (error) {
       alert('Erreur lors de la mise à jour');
+    }
+  };
+
+  const handleReorder = async (newOrder: Partner[]) => {
+    try {
+      const response = await fetch('/api/admin/content/partners/reorder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: newOrder.map((item, index) => ({
+            id: item.id,
+            order: index,
+          })),
+        }),
+      });
+
+      if (!response.ok) throw new Error('Erreur lors de la réorganisation');
+      
+      // Mettre à jour l'ordre localement
+      setPartners(newOrder);
+    } catch (error) {
+      console.error('Erreur lors de la réorganisation:', error);
+      alert('Erreur lors de la réorganisation');
+      fetchPartners(); // Recharger en cas d'erreur
     }
   };
 

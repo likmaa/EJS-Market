@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/lib/auth-config';
 import { isAdmin } from '@/lib/auth';
 import { getContentHistory } from '@/lib/content-history';
 import { z } from 'zod';

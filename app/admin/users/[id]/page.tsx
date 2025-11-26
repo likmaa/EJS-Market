@@ -38,7 +38,7 @@ export default function UserDetailPage() {
 
   useEffect(() => {
     fetchUser();
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchUser = async () => {
     setIsLoading(true);
