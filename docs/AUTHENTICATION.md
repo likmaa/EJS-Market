@@ -20,6 +20,26 @@ Pour générer un `NEXTAUTH_SECRET` sécurisé :
 openssl rand -base64 32
 ```
 
+### Configuration initiale
+
+1. **Créer/Migrer la base de données** :
+   ```bash
+   npm run db:push
+   ```
+
+2. **Créer l'utilisateur admin** :
+   ```bash
+   npm run db:seed
+   ```
+   - Email : `admin@ejsmarket.com`
+   - Mot de passe : `Admin123!`
+   - ⚠️ Changez ce mot de passe après la première connexion !
+
+3. **Tester l'authentification** :
+   - Démarrer : `npm run dev`
+   - Se connecter : `http://localhost:3000/login`
+   - Accéder à l'admin : `http://localhost:3000/admin`
+
 ## Architecture
 
 ### NextAuth.js Configuration

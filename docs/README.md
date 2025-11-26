@@ -41,18 +41,42 @@ npm run dev
 
 ## 📚 Documentation
 
-Toute la documentation est regroupée dans ce dossier :
+### 🚀 Démarrage Rapide
 
-- [`README.md`](./README.md) - Ce fichier (vue d'ensemble)
+- [`GUIDE_DEMARRAGE.md`](./GUIDE_DEMARRAGE.md) - Guide de démarrage complet
+- [`SETUP_DATABASE.md`](./SETUP_DATABASE.md) - Configuration de la base de données
+- [`AUTHENTICATION.md`](./AUTHENTICATION.md) - Configuration de l'authentification
+
+### 🚢 Déploiement
+
+- [`DEPLOIEMENT.md`](./DEPLOIEMENT.md) - Vue d'ensemble du déploiement
+- [`VERCEL.md`](./VERCEL.md) - Guide complet Vercel (variables, dépannage)
+- [`INSTRUCTIONS_GITHUB.md`](./INSTRUCTIONS_GITHUB.md) - Configuration GitHub
+
+### 📖 Documentation Technique
+
 - [`CAHIER_DES_CHARGES.md`](./CAHIER_DES_CHARGES.md) - Cahier des charges complet
-- [`GUIDE_DEMARRAGE.md`](./GUIDE_DEMARRAGE.md) - Guide de démarrage
 - [`FRONTEND_README.md`](./FRONTEND_README.md) - Documentation frontend
-- [`DEPLOIEMENT.md`](./DEPLOIEMENT.md) - Guide de déploiement
+- [`STRUCTURE_FICHIERS.md`](./STRUCTURE_FICHIERS.md) - Structure du projet
 - [`STACK_VALIDATION.md`](./STACK_VALIDATION.md) - Validation de la stack technique
+
+### ⚡ Performance & Optimisations
+
+- [`OPTIMISATIONS_PERFORMANCE.md`](./OPTIMISATIONS_PERFORMANCE.md) - Optimisations mobile
 - [`OPTIMISATION_IMAGES.md`](./OPTIMISATION_IMAGES.md) - Guide d'optimisation des images
-- [`GITHUB_PUSH.md`](./GITHUB_PUSH.md) - Instructions GitHub
-- [`INSTRUCTIONS_GITHUB.md`](./INSTRUCTIONS_GITHUB.md) - Instructions GitHub supplémentaires
-- [`DIAGNOSTIC_CSS.md`](./DIAGNOSTIC_CSS.md) - Diagnostic CSS
+- [`BREAKPOINTS_RESPONSIVE.md`](./BREAKPOINTS_RESPONSIVE.md) - Breakpoints responsive
+
+### 👥 Administration
+
+- [`ADMIN_PANEL.md`](./ADMIN_PANEL.md) - Documentation du panel admin
+- [`MANAGER_PERMISSIONS.md`](./MANAGER_PERMISSIONS.md) - Permissions Manager
+- [`CONTENT_MANAGEMENT.md`](./CONTENT_MANAGEMENT.md) - Gestion du contenu
+
+### 🗺️ Roadmap
+
+- [`PROCHAINES_ETAPES.md`](./PROCHAINES_ETAPES.md) - Prochaines étapes
+- [`ROADMAP_V2.md`](./ROADMAP_V2.md) - Roadmap version 2
+- [`AMELIORATIONS_OPTIONNELLES.md`](./AMELIORATIONS_OPTIONNELLES.md) - Améliorations futures
 
 ## 🔒 Sécurité
 

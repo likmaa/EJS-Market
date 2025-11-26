@@ -1,56 +1,61 @@
-# 📋 Instructions Rapides - GitHub & Vercel
+# 📋 Guide GitHub - Push et Configuration
 
-## 🐙 Étape 1 : Créer le dépôt GitHub
+## 🐙 Créer le Dépôt GitHub
 
 1. Allez sur https://github.com/new
-2. **Repository name** : `electronica-jardin-store`
+2. **Repository name** : `EJS-Market` (ou votre nom)
 3. **Description** : "E-commerce platform for electronics and garden products"
 4. Choisissez **Public** ou **Private**
-5. **NE COCHEZ PAS** "Add a README file" (on a déjà tout)
+5. **NE COCHEZ PAS** "Add a README file"
 6. Cliquez sur **"Create repository"**
 
-## 🔗 Étape 2 : Connecter et pousser
+## 🔗 Connecter et Pousser le Code
 
-**Copiez-collez ces commandes** (remplacez `VOTRE_USERNAME` par votre nom d'utilisateur GitHub) :
+### Option 1 : HTTPS avec Token (Recommandé)
 
+1. **Créer un token GitHub** :
+   - https://github.com/settings/tokens
+   - **Generate new token (classic)**
+   - Cochez **"repo"**
+   - **COPIEZ LE TOKEN**
+
+2. **Pousser** :
 ```bash
-# Ajouter le remote GitHub
-git remote add origin https://github.com/VOTRE_USERNAME/electronica-jardin-store.git
-
-# Renommer la branche en 'main'
+git remote add origin https://github.com/VOTRE_USERNAME/EJS-Market.git
 git branch -M main
+git push -u origin main
+# Username: VOTRE_USERNAME
+# Password: VOTRE_TOKEN
+```
 
-# Pousser le code
+### Option 2 : SSH (Plus sécurisé)
+
+1. **Créer une clé SSH** :
+```bash
+ssh-keygen -t ed25519 -C "votre-email@example.com"
+cat ~/.ssh/id_ed25519.pub
+```
+
+2. **Ajouter à GitHub** :
+   - https://github.com/settings/keys
+   - **New SSH key** → Coller la clé
+
+3. **Pousser** :
+```bash
+git remote add origin git@github.com:VOTRE_USERNAME/EJS-Market.git
+git branch -M main
 git push -u origin main
 ```
 
-**Si vous utilisez SSH** :
+### Option 3 : GitHub CLI
+
 ```bash
-git remote add origin git@github.com:VOTRE_USERNAME/electronica-jardin-store.git
-git branch -M main
+brew install gh
+gh auth login
 git push -u origin main
 ```
-
-## ☁️ Étape 3 : Déployer sur Vercel
-
-1. Allez sur https://vercel.com
-2. Cliquez sur **"Sign Up"** et connectez-vous avec **GitHub**
-3. Cliquez sur **"Add New Project"**
-4. Sélectionnez votre dépôt `electronica-jardin-store`
-5. Vercel détectera automatiquement Next.js
-6. **Ajoutez les variables d'environnement** :
-   - `DATABASE_URL` : (à configurer avec Supabase/Railway)
-   - `NEXTAUTH_SECRET` : (générez avec `openssl rand -base64 32`)
-   - `NEXTAUTH_URL` : (sera rempli automatiquement après le premier déploiement)
-7. Cliquez sur **"Deploy"**
-
-## ✅ C'est tout !
-
-Votre site sera accessible sur `https://votre-projet.vercel.app`
-
-**Note** : N'oubliez pas de configurer la base de données PostgreSQL avant de déployer !
 
 ---
 
-Pour plus de détails, voir `DEPLOIEMENT.md`
+Pour le déploiement Vercel, voir [`VERCEL.md`](./VERCEL.md)
 
