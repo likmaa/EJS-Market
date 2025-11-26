@@ -241,7 +241,7 @@ export default function ImportContentPage() {
 
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
         <p className="text-sm text-yellow-800">
-          <strong>⚠️ Attention :</strong> Cette action va créer les contenus dans la base de données. 
+          <strong>Attention :</strong> Cette action va créer les contenus dans la base de données. 
           Vous pourrez ensuite les modifier ou les supprimer depuis les pages de gestion respectives.
         </p>
       </div>

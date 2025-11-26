@@ -49,7 +49,7 @@ export default function ContentManagementPage() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                📥 Importer les contenus actuels
+                Importer les contenus actuels
               </h3>
               <p className="text-sm text-gray-600 mb-4">
                 Importez les contenus statiques actuels (partenaires, témoignages, images) dans la base de données pour les rendre modifiables.

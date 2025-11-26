@@ -15,6 +15,11 @@ import {
   UsersIcon,
   SettingsIcon,
   ContentIcon,
+  CloseIcon,
+  BackIcon,
+  MenuIcon,
+  BellIcon,
+  LogoutIcon,
 } from '@/components/admin/AdminIcons';
 
 const navigation = [
@@ -66,9 +71,7 @@ export default function AdminLayout({
               className="text-gray-400 hover:text-gray-600"
               aria-label="Fermer le menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <CloseIcon className="w-6 h-6" />
             </button>
           </div>
           <nav className="mt-8 px-4 space-y-2">
@@ -146,9 +149,7 @@ export default function AdminLayout({
               href="/"
               className="flex items-center gap-2 text-sm text-gray-600 hover:text-violet-electric transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
+              <BackIcon className="w-4 h-4" />
               Retour au site
             </Link>
           </div>
@@ -165,9 +166,7 @@ export default function AdminLayout({
             onClick={() => setSidebarOpen(true)}
             aria-label="Ouvrir le menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <MenuIcon className="w-6 h-6" />
           </button>
           <div className="flex-1">
             <h1 className="text-xl font-bold text-gray-900">
@@ -176,9 +175,7 @@ export default function AdminLayout({
           </div>
           <div className="flex items-center gap-4">
             <button className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
+              <BellIcon className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
@@ -194,9 +191,7 @@ export default function AdminLayout({
                 aria-label="Profil"
                 title="Profil"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                <ProfileIcon className="w-5 h-5" />
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
@@ -204,9 +199,7 @@ export default function AdminLayout({
                 aria-label="Déconnexion"
                 title="Déconnexion"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
+                <LogoutIcon className="w-5 h-5" />
               </button>
             </div>
           </div>

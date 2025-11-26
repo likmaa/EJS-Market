@@ -142,7 +142,7 @@ export default function TestimonialsPage() {
           <p className="text-gray-600 mt-1">Gérer les témoignages clients affichés sur le site</p>
         </div>
         <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-          + Ajouter un témoignage
+          Ajouter un témoignage
         </Button>
       </div>
 
@@ -154,7 +154,11 @@ export default function TestimonialsPage() {
       ) : testimonials.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="text-6xl mb-4">💬</div>
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-violet-50 flex items-center justify-center text-violet-electric">
+                <span className="text-2xl font-semibold">T</span>
+              </div>
+            </div>
             <p className="text-gray-500 mb-2 text-lg font-medium">Aucun témoignage pour le moment</p>
             <p className="text-gray-400 text-sm mb-6">
               Commencez par importer les témoignages existants ou créez-en de nouveaux.
@@ -162,11 +166,11 @@ export default function TestimonialsPage() {
             <div className="flex gap-3 justify-center">
               <Link href="/admin/content/import">
                 <Button variant="outline">
-                  📥 Importer les témoignages existants
+                  Importer les témoignages existants
                 </Button>
               </Link>
               <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-                ➕ Ajouter un témoignage
+                Ajouter un témoignage
               </Button>
             </div>
           </CardContent>

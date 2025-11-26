@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  RevenueIcon,
+  CartIcon,
+  BoxIcon,
+  TrendIcon,
+  PlusCircleIcon,
+  HourglassIcon,
+  WarningIcon,
+} from '@/components/admin/AdminIcons';
 
 interface Stats {
   revenue: {
@@ -94,8 +103,8 @@ export default function AdminDashboard() {
                   })}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-2xl">💰</span>
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                <RevenueIcon className="w-7 h-7" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
@@ -113,8 +122,8 @@ export default function AdminDashboard() {
                   {stats.orders.month}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-2xl">🛒</span>
+              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                <CartIcon className="w-7 h-7" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
@@ -132,8 +141,8 @@ export default function AdminDashboard() {
                   {stats.products.total}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <span className="text-2xl">📦</span>
+              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                <BoxIcon className="w-7 h-7" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
@@ -154,8 +163,8 @@ export default function AdminDashboard() {
                   })}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
-                <span className="text-2xl">📈</span>
+              <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                <TrendIcon className="w-7 h-7" />
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
@@ -177,14 +186,18 @@ export default function AdminDashboard() {
                 href="/admin/products/new"
                 className="flex items-center gap-3 p-3 rounded-lg bg-violet-electric text-white hover:bg-violet-700 transition-colors"
               >
-                <span className="text-xl">➕</span>
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/10">
+                  <PlusCircleIcon className="w-5 h-5 text-white" />
+                </div>
                 <span className="font-medium">Ajouter un produit</span>
               </Link>
               <Link
                 href="/admin/orders?status=PENDING"
                 className="flex items-center gap-3 p-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
               >
-                <span className="text-xl">⏳</span>
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white">
+                  <HourglassIcon className="w-5 h-5 text-gray-600" />
+                </div>
                 <span className="font-medium">
                   Voir les commandes en attente ({stats.pendingOrders})
                 </span>
@@ -193,7 +206,9 @@ export default function AdminDashboard() {
                 href="/admin/products?stock=low"
                 className="flex items-center gap-3 p-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
               >
-                <span className="text-xl">⚠️</span>
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-yellow-50">
+                  <WarningIcon className="w-5 h-5 text-yellow-500" />
+                </div>
                 <span className="font-medium">
                   Produits en stock faible ({stats.products?.lowStock || 0})
                 </span>

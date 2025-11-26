@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { SortableList } from '@/components/admin/SortableList';
 import { ContentPreview } from '@/components/admin/ContentPreview';
 import { ContentHistory } from '@/components/admin/ContentHistory';
+import { PlusCircleIcon } from '@/components/admin/AdminIcons';
 
 interface Partner {
   id: string;
@@ -198,7 +199,10 @@ export default function PartnersPage() {
           <p className="text-gray-600 mt-1">Gérer les logos des partenaires affichés sur le site</p>
         </div>
         <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-          + Ajouter un partenaire
+          <span className="flex items-center gap-2">
+            <PlusCircleIcon className="w-4 h-4" />
+            <span>Ajouter un partenaire</span>
+          </span>
         </Button>
       </div>
 
@@ -210,7 +214,11 @@ export default function PartnersPage() {
       ) : partners.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="text-6xl mb-4">📋</div>
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-violet-50 flex items-center justify-center text-violet-electric">
+                <span className="text-2xl font-semibold">P</span>
+              </div>
+            </div>
             <p className="text-gray-500 mb-2 text-lg font-medium">Aucun partenaire pour le moment</p>
             <p className="text-gray-400 text-sm mb-6">
               Commencez par importer les partenaires existants ou créez-en de nouveaux.
@@ -218,11 +226,14 @@ export default function PartnersPage() {
             <div className="flex gap-3 justify-center">
               <Link href="/admin/content/import">
                 <Button variant="outline">
-                  📥 Importer les partenaires existants
+                  Importer les partenaires existants
                 </Button>
               </Link>
               <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-                ➕ Ajouter un partenaire
+                <span className="flex items-center gap-2">
+                  <PlusCircleIcon className="w-4 h-4" />
+                  <span>Ajouter un partenaire</span>
+                </span>
               </Button>
             </div>
           </CardContent>

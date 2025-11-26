@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { FileDownloadIcon } from '@/components/admin/AdminIcons';
 
 interface User {
   id: string;
@@ -140,7 +141,10 @@ export default function UsersPage() {
               window.open('/api/admin/export?type=users&format=csv', '_blank');
             }}
           >
-            📥 Exporter CSV
+            <span className="flex items-center gap-2">
+              <FileDownloadIcon />
+              <span>Exporter CSV</span>
+            </span>
           </Button>
           <Button
             variant="primary"

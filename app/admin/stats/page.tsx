@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/Card';
+import { CartIcon, RevenueIcon, BoxIcon } from '@/components/admin/AdminIcons';
 
 // Données mockées - à remplacer par des appels API
 const stats = {
@@ -167,9 +168,9 @@ export default function AdminStatsPage() {
                   className="flex items-start gap-3 p-3 rounded-lg bg-gray-50"
                 >
                   <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
-                    {activity.type === 'order' && '🛒'}
-                    {activity.type === 'payment' && '💰'}
-                    {activity.type === 'product' && '📦'}
+                    {activity.type === 'order' && <CartIcon className="w-4 h-4" />}
+                    {activity.type === 'payment' && <RevenueIcon className="w-4 h-4" />}
+                    {activity.type === 'product' && <BoxIcon className="w-4 h-4" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900">

@@ -262,3 +262,14 @@ model ContentHistory {
   @@map("content_history")
 }
 
+// Paramètres globaux du site (barre d'actualités, etc.)
+model SiteSettings {
+  id           String   @id @default("global")
+  newsBarText  String   // Texte de la barre d'actualités en haut du site
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+

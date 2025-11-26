@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/hooks/useAuth';
+import { FileDownloadIcon, PlusCircleIcon, BoxIcon } from '@/components/admin/AdminIcons';
 
 interface Product {
   id: string;
@@ -77,13 +78,18 @@ export default function AdminProductsPage() {
                 window.open('/api/admin/export?type=products&format=csv', '_blank');
               }}
             >
-              📥 Exporter CSV
+              <span className="flex items-center gap-2">
+                <FileDownloadIcon />
+                <span>Exporter CSV</span>
+              </span>
             </Button>
           )}
           <Link href="/admin/products/new">
             <Button variant="primary" size="lg">
-              <span className="mr-2">➕</span>
-              Ajouter un produit
+              <span className="flex items-center gap-2">
+                <PlusCircleIcon className="w-4 h-4" />
+                <span>Ajouter un produit</span>
+              </span>
             </Button>
           </Link>
         </div>
@@ -195,7 +201,7 @@ export default function AdminProductsPage() {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <span>📦</span>
+                                  <BoxIcon className="w-5 h-5" />
                                 </div>
                               )}
                             </div>
@@ -246,7 +252,7 @@ export default function AdminProductsPage() {
                               href={`/admin/products/${product.id}/edit`}
                               className="text-violet-electric hover:text-violet-700"
                             >
-                              ✏️ Modifier
+                              Modifier
                             </Link>
                             {permissions.canDeleteProducts && (
                               <button
@@ -266,7 +272,7 @@ export default function AdminProductsPage() {
                                 }}
                                 className="text-red-600 hover:text-red-700"
                               >
-                                🗑️ Supprimer
+                                Supprimer
                               </button>
                             )}
                           </div>

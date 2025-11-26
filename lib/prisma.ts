@@ -22,7 +22,17 @@ if (process.env.NODE_ENV === 'production') {
   const dbUrl = process.env.DATABASE_URL;
   const maskedUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':****@') : 'undefined';
   console.log('[Prisma] DATABASE_URL:', maskedUrl);
-  console.log('[Prisma] Using pooler:', dbUrl?.includes('.pooler.supabase.com') ? 'YES' : 'NO');
+  
+  // Détecter le provider
+  if (dbUrl?.includes('.neon.tech')) {
+    console.log('[Prisma] Provider: Neon');
+  } else if (dbUrl?.includes('.pooler.supabase.com')) {
+    console.log('[Prisma] Provider: Supabase (Pooler)');
+  } else if (dbUrl?.includes('.supabase.co')) {
+    console.log('[Prisma] Provider: Supabase (Direct)');
+  } else {
+    console.log('[Prisma] Provider: Unknown');
+  }
 }
 
 export const prisma =

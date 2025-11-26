@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
+import { FileDownloadIcon } from '@/components/admin/AdminIcons';
 
 interface Order {
   id: string;
@@ -99,7 +100,10 @@ export default function AdminOrdersPage() {
               window.open('/api/admin/export?type=orders&format=csv', '_blank');
             }}
           >
-            📥 Exporter CSV
+            <span className="flex items-center gap-2">
+              <FileDownloadIcon />
+              <span>Exporter CSV</span>
+            </span>
           </Button>
         )}
       </div>

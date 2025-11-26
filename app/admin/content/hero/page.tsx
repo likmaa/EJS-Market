@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PlusCircleIcon, VideoBadgeIcon } from '@/components/admin/AdminIcons';
 
 interface HeroImage {
   id: string;
@@ -232,7 +233,10 @@ export default function HeroImagesPage() {
           <p className="text-gray-600 mt-1">Gérer les images de la grille hero (2 cartes)</p>
         </div>
         <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-          + Ajouter une image
+          <span className="flex items-center gap-2">
+            <PlusCircleIcon className="w-4 h-4" />
+            <span>Ajouter une image</span>
+          </span>
         </Button>
       </div>
 
@@ -309,7 +313,11 @@ export default function HeroImagesPage() {
       ) : filteredImages.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="text-6xl mb-4">🖼️</div>
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-violet-50 flex items-center justify-center text-violet-electric">
+                <span className="text-2xl font-semibold">H</span>
+              </div>
+            </div>
             <p className="text-gray-500 mb-2 text-lg font-medium">Aucune image hero pour le moment</p>
             <p className="text-gray-400 text-sm mb-6">
               Commencez par importer les images existantes ou créez-en de nouvelles.
@@ -317,11 +325,14 @@ export default function HeroImagesPage() {
             <div className="flex gap-3 justify-center">
               <Link href="/admin/content/import">
                 <Button variant="outline">
-                  📥 Importer les images existantes
+                  Importer les images existantes
                 </Button>
               </Link>
               <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-                ➕ Ajouter une image
+                <span className="flex items-center gap-2">
+                  <PlusCircleIcon className="w-4 h-4" />
+                  <span>Ajouter une image</span>
+                </span>
               </Button>
             </div>
           </CardContent>
@@ -353,8 +364,9 @@ export default function HeroImagesPage() {
                     </div>
                   )}
                   {image.mediaType === 'video' && (
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                      🎥 Vidéo
+                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                      <VideoBadgeIcon className="w-3 h-3" />
+                      <span>Vidéo</span>
                     </div>
                   )}
                 </div>

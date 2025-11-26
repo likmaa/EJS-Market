@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
+const DEFAULT_NEWSBAR_TEXT =
+  'Livraison Gratuite en Europe dès 100€ ⚡️ Nouveaux Robots Husqvarna en stock ⚡️ -10% sur Apple avec le code EJS10 ⚡️';
+
 export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingNewsBar, setIsLoadingNewsBar] = useState(true);
   const [settings, setSettings] = useState({
     siteName: 'eJS MARKET',
     siteDescription: 'Plateforme e-commerce multi-produits',
@@ -14,14 +18,60 @@ export default function SettingsPage() {
     defaultCurrency: 'EUR',
     defaultLanguage: 'fr',
     maintenanceMode: false,
+    newsBarText: DEFAULT_NEWSBAR_TEXT,
   });
+
+  useEffect(() => {
+    async function loadNewsBar() {
+      try {
+        const res = await fetch('/api/settings/newsbar');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.newsBarText && typeof data.newsBarText === 'string') {
+          setSettings((prev) => ({
+            ...prev,
+            newsBarText: data.newsBarText,
+          }));
+        }
+      } catch {
+        // On garde la valeur par défaut
+      } finally {
+        setIsLoadingNewsBar(false);
+      }
+    }
+
+    loadNewsBar();
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
-    // TODO: Implémenter l'API de sauvegarde des paramètres
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSaving(false);
-    alert('Paramètres sauvegardés avec succès');
+    try {
+      // Sauvegarde du texte de la NewsBar
+      const res = await fetch('/api/settings/newsbar', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newsBarText: settings.newsBarText }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Erreur lors de la sauvegarde de la NewsBar');
+      }
+
+      // TODO: Sauvegarder les autres paramètres quand l’API globale existera
+      alert('Paramètres sauvegardés avec succès');
+    } catch (error) {
+      console.error('[Settings] Erreur lors de la sauvegarde:', error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Erreur lors de la sauvegarde des paramètres',
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -81,6 +131,37 @@ export default function SettingsPage() {
                 />
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Barre d&apos;actualités (NewsBar)</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Texte affiché tout en haut du site, défilant horizontalement. Utilisez ce bandeau pour les promotions,
+            informations de livraison, codes promo, etc.
+          </p>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Texte de la NewsBar
+            </label>
+            <textarea
+              rows={3}
+              value={settings.newsBarText}
+              onChange={(e) =>
+                setSettings((prev) => ({
+                  ...prev,
+                  newsBarText: e.target.value,
+                }))
+              }
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+              placeholder={DEFAULT_NEWSBAR_TEXT}
+              disabled={isLoadingNewsBar}
+            />
+            <p className="text-xs text-gray-500">
+              Maximum 500 caractères. Le texte sera répété dans le bandeau défilant.
+            </p>
           </div>
         </CardContent>
       </Card>
