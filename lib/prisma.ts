@@ -11,6 +11,20 @@ const prismaClientOptions: Prisma.PrismaClientOptions = {
     : (['error'] as Prisma.LogLevel[]),
 }
 
+// Vérifier que DATABASE_URL est définie
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL is not defined!');
+  throw new Error('DATABASE_URL environment variable is not set');
+}
+
+// Log la connection string (masquée) pour debug
+if (process.env.NODE_ENV === 'production') {
+  const dbUrl = process.env.DATABASE_URL;
+  const maskedUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':****@') : 'undefined';
+  console.log('[Prisma] DATABASE_URL:', maskedUrl);
+  console.log('[Prisma] Using pooler:', dbUrl?.includes('.pooler.supabase.com') ? 'YES' : 'NO');
+}
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient(prismaClientOptions)
