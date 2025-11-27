@@ -94,7 +94,11 @@ export async function POST(request: NextRequest) {
     const validatedData = immersiveImageSchema.parse(body);
 
     const image = await prisma.immersive_images.create({
-      data: validatedData,
+      data: {
+        ...validatedData,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({ image }, { status: 201 });

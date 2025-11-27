@@ -104,7 +104,11 @@ export async function POST(request: NextRequest) {
     }
 
     const product = await prisma.products.create({
-      data: validatedData,
+      data: {
+        ...validatedData,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({ product }, { status: 201 });

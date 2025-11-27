@@ -27,11 +27,13 @@ async function resetAdminPassword() {
       // Créer l'utilisateur admin
       const admin = await prisma.users.create({
         data: {
+          id: crypto.randomUUID(),
           email: adminEmail,
           passwordHash,
           name: 'Administrateur',
           role: UserRole.ADMIN,
           isEmailVerified: true,
+          updatedAt: new Date(),
         },
       });
       

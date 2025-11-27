@@ -193,6 +193,7 @@ async function seedContent() {
           // Créer
           await prisma.hero_images.create({
             data: {
+              id: crypto.randomUUID(),
               type: 'tech',
               name: image.name,
               imageUrl: image.url,
@@ -200,6 +201,7 @@ async function seedContent() {
               available: image.available,
               order: i,
               isActive: true,
+              updatedAt: new Date(),
             },
           });
         }
@@ -240,6 +242,7 @@ async function seedContent() {
           // Créer
           await prisma.hero_images.create({
             data: {
+              id: crypto.randomUUID(),
               type: 'garden',
               name: image.name,
               imageUrl: image.url,
@@ -247,6 +250,7 @@ async function seedContent() {
               available: image.available,
               order: i,
               isActive: true,
+              updatedAt: new Date(),
             },
           });
         }

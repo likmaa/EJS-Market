@@ -138,12 +138,14 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.users.create({
       data: {
+        id: crypto.randomUUID(),
         email: validatedData.email,
         passwordHash,
         name: validatedData.name,
         role: validatedData.role,
         vatNumber: validatedData.vatNumber,
         isEmailVerified: validatedData.role === 'ADMIN' || validatedData.role === 'MANAGER',
+        updatedAt: new Date(),
       },
       select: {
         id: true,

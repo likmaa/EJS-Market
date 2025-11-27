@@ -47,11 +47,13 @@ async function createManager() {
     // Créer l'utilisateur
     const user = await prisma.users.create({
       data: {
+        id: crypto.randomUUID(),
         email,
         passwordHash,
         name,
         role: UserRole.MANAGER,
         isEmailVerified: true, // Marquer comme vérifié pour faciliter les tests
+        updatedAt: new Date(),
       },
     });
 

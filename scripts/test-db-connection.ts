@@ -25,11 +25,13 @@ async function testConnection() {
       const passwordHash = await bcrypt.hash('Admin123!', 12);
       const newAdmin = await prisma.users.create({
         data: {
+          id: crypto.randomUUID(),
           email: 'admin@ejsmarket.com',
           passwordHash,
           name: 'Administrateur',
           role: 'ADMIN',
           isEmailVerified: true,
+          updatedAt: new Date(),
         },
       });
       console.log('✅ Utilisateur admin créé');
