@@ -10,7 +10,7 @@ import { FileDownloadIcon } from '@/components/admin/AdminIcons';
 
 interface Order {
   id: string;
-  user: {
+  users: {
     id: string;
     email: string;
     name: string | null;
@@ -18,7 +18,7 @@ interface Order {
   totalTTC: number;
   status: string;
   createdAt: string;
-  items: Array<{
+  order_items: Array<{
     quantity: number;
   }>;
 }
@@ -192,7 +192,7 @@ export default function AdminOrdersPage() {
                     </tr>
                   ) : (
                     orders.map((order) => {
-                      const itemsCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+                      const itemsCount = order.order_items.reduce((sum, item) => sum + item.quantity, 0);
                       return (
                         <tr key={order.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -203,9 +203,9 @@ export default function AdminOrdersPage() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
                               <div className="font-medium text-gray-900">
-                                {order.user.name || 'Client'}
+                                {order.users.name || 'Client'}
                               </div>
-                              <div className="text-sm text-gray-500">{order.user.email}</div>
+                              <div className="text-sm text-gray-500">{order.users.email}</div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
