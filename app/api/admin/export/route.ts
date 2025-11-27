@@ -63,12 +63,12 @@ export async function GET(request: NextRequest) {
       case 'orders':
         const orders = await prisma.orders.findMany({
           include: {
-            user: {
+            users: {
               select: { email: true, name: true },
             },
-            items: {
+            order_items: {
               include: {
-                product: {
+                products: {
                   select: { sku: true, name: true },
                 },
               },
@@ -78,14 +78,14 @@ export async function GET(request: NextRequest) {
         });
         data = orders.map(o => ({
           ID: o.id,
-          Email: o.user.email,
-          'Nom client': o.user.name || '',
+          Email: o.users.email,
+          'Nom client': o.users.name || '',
           Statut: o.status,
           'Total HT (€)': (o.totalHT / 100).toFixed(2),
           'Total TTC (€)': (o.totalTTC / 100).toFixed(2),
           'Frais livraison (€)': (o.shippingCost / 100).toFixed(2),
           'Date commande': new Date(o.createdAt).toLocaleDateString('fr-FR'),
-          'Nombre articles': o.items.length,
+          'Nombre articles': o.order_items.length,
         }));
         filename = 'commandes';
         break;

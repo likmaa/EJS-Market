@@ -830,7 +830,11 @@ async function main() {
     await prisma.products.upsert({
       where: { sku: product.sku },
       update: {},
-      create: product,
+      create: {
+        ...product,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
     console.log(`✅ Product created: ${product.name.fr}`);
   }

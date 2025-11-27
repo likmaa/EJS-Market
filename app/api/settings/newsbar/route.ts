@@ -60,6 +60,7 @@ export async function PUT(req: Request) {
       create: {
         id: 'global',
         newsBarText: text,
+        updatedAt: new Date(),
       },
     });
 
