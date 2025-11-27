@@ -38,7 +38,7 @@ export async function GET(
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id },
       select: {
         id: true,
@@ -101,7 +101,7 @@ export async function PUT(
 
     // Vérifier si l'email existe déjà (si modifié)
     if (validatedData.email) {
-      const existingUser = await prisma.user.findFirst({
+      const existingUser = await prisma.users.findFirst({
         where: {
           email: validatedData.email,
           NOT: { id },
@@ -124,7 +124,7 @@ export async function PUT(
       delete updateData.password;
     }
 
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: { id },
       data: updateData,
       select: {
@@ -187,7 +187,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.user.delete({
+    await prisma.users.delete({
       where: { id },
     });
 

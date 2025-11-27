@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Vérifier que le modèle existe
-    if (!prisma.immersiveImage) {
+    if (!prisma.immersive_images) {
       console.error('Le modèle ImmersiveImage n\'existe pas dans Prisma Client. Exécutez: npx prisma generate');
       return NextResponse.json(
         { 
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const images = await prisma.immersiveImage.findMany({
+    const images = await prisma.immersive_images.findMany({
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     });
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = immersiveImageSchema.parse(body);
 
-    const image = await prisma.immersiveImage.create({
+    const image = await prisma.immersive_images.create({
       data: validatedData,
     });
 

@@ -14,7 +14,7 @@ async function testConnection() {
     
     // Test 2: Vérifier que l'utilisateur admin existe
     console.log('2️⃣ Vérification de l\'utilisateur admin...');
-    const admin = await prisma.user.findUnique({
+    const admin = await prisma.users.findUnique({
       where: { email: 'admin@ejsmarket.com' },
     });
     
@@ -23,7 +23,7 @@ async function testConnection() {
       console.log('💡 Création de l\'utilisateur admin...');
       
       const passwordHash = await bcrypt.hash('Admin123!', 12);
-      const newAdmin = await prisma.user.create({
+      const newAdmin = await prisma.users.create({
         data: {
           email: 'admin@ejsmarket.com',
           passwordHash,
@@ -54,7 +54,7 @@ async function testConnection() {
         console.log('💡 Réinitialisation du mot de passe...');
         
         const newPasswordHash = await bcrypt.hash(testPassword, 12);
-        await prisma.user.update({
+        await prisma.users.update({
           where: { email: 'admin@ejsmarket.com' },
           data: { passwordHash: newPasswordHash },
         });
@@ -65,7 +65,7 @@ async function testConnection() {
     
     // Test 4: Compter les utilisateurs
     console.log('\n4️⃣ Statistiques de la base de données...');
-    const userCount = await prisma.user.count();
+    const userCount = await prisma.users.count();
     console.log(`   Nombre d'utilisateurs: ${userCount}`);
     
     console.log('\n✅ Tous les tests sont passés !');

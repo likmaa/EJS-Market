@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     const yearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
 
     // Revenus
-    const revenueToday = await prisma.order.aggregate({
+    const revenueToday = await prisma.orders.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
         createdAt: { gte: today },
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       _sum: { totalTTC: true },
     });
 
-    const revenueWeek = await prisma.order.aggregate({
+    const revenueWeek = await prisma.orders.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
         createdAt: { gte: weekAgo },
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       _sum: { totalTTC: true },
     });
 
-    const revenueMonth = await prisma.order.aggregate({
+    const revenueMonth = await prisma.orders.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
         createdAt: { gte: monthAgo },
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       _sum: { totalTTC: true },
     });
 
-    const revenueYear = await prisma.order.aggregate({
+    const revenueYear = await prisma.orders.aggregate({
       where: {
         status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
         createdAt: { gte: yearAgo },
@@ -69,33 +69,33 @@ export async function GET(request: NextRequest) {
     });
 
     // Commandes
-    const ordersToday = await prisma.order.count({
+    const ordersToday = await prisma.orders.count({
       where: { createdAt: { gte: today } },
     });
 
-    const ordersWeek = await prisma.order.count({
+    const ordersWeek = await prisma.orders.count({
       where: { createdAt: { gte: weekAgo } },
     });
 
-    const ordersMonth = await prisma.order.count({
+    const ordersMonth = await prisma.orders.count({
       where: { createdAt: { gte: monthAgo } },
     });
 
     // Produits
-    const totalProducts = await prisma.product.count();
-    const lowStockProducts = await prisma.product.count({
+    const totalProducts = await prisma.products.count();
+    const lowStockProducts = await prisma.products.count({
       where: { stock: { lt: 5 } },
     });
 
     // Commandes en attente
-    const pendingOrders = await prisma.order.count({
+    const pendingOrders = await prisma.orders.count({
       where: { status: 'PENDING' },
     });
 
     // Top produits (si permissions - ADMIN uniquement)
     let topProducts: any[] = [];
     if (canViewAll) {
-      const topProductsData = await prisma.orderItem.groupBy({
+      const topProductsData = await prisma.order_items.groupBy({
         by: ['productId'],
         _sum: { quantity: true },
         _count: true,
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
 
       topProducts = await Promise.all(
         topProductsData.map(async (item) => {
-          const product = await prisma.product.findUnique({
+          const product = await prisma.products.findUnique({
             where: { id: item.productId },
             select: { id: true, name: true, priceHT: true },
           });

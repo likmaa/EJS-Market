@@ -24,7 +24,7 @@ async function checkTables() {
 
     // Vérifier HeroImage
     try {
-      const heroCount = await prisma.heroImage.count();
+      const heroCount = await prisma.hero_images.count();
       console.log(`✅ Table 'hero_images' existe (${heroCount} enregistrements)`);
     } catch (error: any) {
       console.log(`❌ Table 'hero_images' n'existe pas: ${error.message}`);
@@ -32,7 +32,7 @@ async function checkTables() {
 
     // Vérifier ImmersiveImage
     try {
-      const immersiveCount = await prisma.immersiveImage.count();
+      const immersiveCount = await prisma.immersive_images.count();
       console.log(`✅ Table 'immersive_images' existe (${immersiveCount} enregistrements)`);
     } catch (error: any) {
       console.log(`❌ Table 'immersive_images' n'existe pas: ${error.message}`);

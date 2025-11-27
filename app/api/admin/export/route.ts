@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     switch (type) {
       case 'products':
-        const products = await prisma.product.findMany({
+        const products = await prisma.products.findMany({
           select: {
             sku: true,
             name: true,
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
         break;
 
       case 'orders':
-        const orders = await prisma.order.findMany({
+        const orders = await prisma.orders.findMany({
           include: {
             user: {
               select: { email: true, name: true },
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
         break;
 
       case 'users':
-        const users = await prisma.user.findMany({
+        const users = await prisma.users.findMany({
           select: {
             id: true,
             email: true,

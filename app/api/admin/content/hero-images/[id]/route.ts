@@ -34,7 +34,7 @@ export async function GET(
       );
     }
 
-    const image = await prisma.heroImage.findUnique({
+    const image = await prisma.hero_images.findUnique({
       where: { id },
     });
 
@@ -73,7 +73,7 @@ export async function PUT(
     const body = await request.json();
     const validatedData = heroImageUpdateSchema.parse(body);
 
-    const image = await prisma.heroImage.update({
+    const image = await prisma.hero_images.update({
       where: { id },
       data: validatedData,
     });
@@ -110,7 +110,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.heroImage.delete({
+    await prisma.hero_images.delete({
       where: { id },
     });
 

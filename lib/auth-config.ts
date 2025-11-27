@@ -21,7 +21,7 @@ export const authOptions = {
         try {
           console.log('[NextAuth] Tentative de connexion pour:', credentials.email);
           
-          const user = await prisma.user.findUnique({
+          const user = await prisma.users.findUnique({
             where: {
               email: credentials.email as string,
             },

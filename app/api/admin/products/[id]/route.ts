@@ -39,7 +39,7 @@ export async function GET(
       );
     }
 
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { id },
     });
 
@@ -79,7 +79,7 @@ export async function PUT(
     const body = await request.json();
     const validatedData = productUpdateSchema.parse(body);
 
-    const product = await prisma.product.update({
+    const product = await prisma.products.update({
       where: { id },
       data: validatedData,
     });
@@ -122,7 +122,7 @@ export async function DELETE(
     // Seuls les admins peuvent supprimer définitivement
     if (!permissions.canDeleteProducts) {
       // Soft delete pour les managers
-      const product = await prisma.product.update({
+      const product = await prisma.products.update({
         where: { id },
         data: { isActive: false },
       });
@@ -130,7 +130,7 @@ export async function DELETE(
     }
 
     // Suppression définitive pour les admins
-    await prisma.product.delete({
+    await prisma.products.delete({
       where: { id },
     });
 

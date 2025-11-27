@@ -28,7 +28,7 @@ export async function PATCH(request: NextRequest) {
 
     await prisma.$transaction(
       items.map((item) =>
-        prisma.heroImage.update({
+        prisma.hero_images.update({
           where: { id: item.id },
           data: { order: item.order },
         })

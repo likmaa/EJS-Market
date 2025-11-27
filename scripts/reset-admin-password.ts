@@ -14,7 +14,7 @@ async function resetAdminPassword() {
     console.log('');
 
     // Vérifier si l'utilisateur existe
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email: adminEmail },
     });
 
@@ -25,7 +25,7 @@ async function resetAdminPassword() {
       const passwordHash = await bcrypt.hash(newPassword, 12);
       
       // Créer l'utilisateur admin
-      const admin = await prisma.user.create({
+      const admin = await prisma.users.create({
         data: {
           email: adminEmail,
           passwordHash,
@@ -48,7 +48,7 @@ async function resetAdminPassword() {
       const passwordHash = await bcrypt.hash(newPassword, 12);
       
       // Mettre à jour le mot de passe
-      const updatedUser = await prisma.user.update({
+      const updatedUser = await prisma.users.update({
         where: { email: adminEmail },
         data: {
           passwordHash,

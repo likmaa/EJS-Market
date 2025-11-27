@@ -33,7 +33,7 @@ export async function POST(
       );
     }
 
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { id },
       include: {
         items: true,
@@ -78,7 +78,7 @@ export async function POST(
     // });
 
     // Mettre à jour le statut de la commande
-    const updatedOrder = await prisma.order.update({
+    const updatedOrder = await prisma.orders.update({
       where: { id },
       data: {
         status: isPartialRefund ? 'PROCESSING' : 'REFUNDED',

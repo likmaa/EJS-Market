@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 // GET - Liste publique des images immersives actives
 export async function GET() {
   try {
-    const images = await prisma.immersiveImage.findMany({
+    const images = await prisma.immersive_images.findMany({
       where: { isActive: true },
       select: {
         id: true,

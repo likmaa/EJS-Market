@@ -5,8 +5,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const userCount = await prisma.user.count();
-    const adminUser = await prisma.user.findUnique({
+    const userCount = await prisma.users.count();
+    const adminUser = await prisma.users.findUnique({
       where: { email: 'admin@ejsmarket.com' },
       select: { id: true, email: true, role: true },
     });

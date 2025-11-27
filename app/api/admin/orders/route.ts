@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.orders.findMany({
       where,
       include: {
         user: {

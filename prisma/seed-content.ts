@@ -170,7 +170,7 @@ async function seedContent() {
       const image = currentTechImages[i];
       try {
         // Vérifier si l'image existe déjà
-        const existing = await prisma.heroImage.findFirst({
+        const existing = await prisma.hero_images.findFirst({
           where: {
             type: 'tech',
             name: image.name,
@@ -179,7 +179,7 @@ async function seedContent() {
 
         if (existing) {
           // Mettre à jour
-          await prisma.heroImage.update({
+          await prisma.hero_images.update({
             where: { id: existing.id },
             data: {
               imageUrl: image.url,
@@ -191,7 +191,7 @@ async function seedContent() {
           });
         } else {
           // Créer
-          await prisma.heroImage.create({
+          await prisma.hero_images.create({
             data: {
               type: 'tech',
               name: image.name,
@@ -217,7 +217,7 @@ async function seedContent() {
       const image = currentJardinImages[i];
       try {
         // Vérifier si l'image existe déjà
-        const existing = await prisma.heroImage.findFirst({
+        const existing = await prisma.hero_images.findFirst({
           where: {
             type: 'garden',
             name: image.name,
@@ -226,7 +226,7 @@ async function seedContent() {
 
         if (existing) {
           // Mettre à jour
-          await prisma.heroImage.update({
+          await prisma.hero_images.update({
             where: { id: existing.id },
             data: {
               imageUrl: image.url,
@@ -238,7 +238,7 @@ async function seedContent() {
           });
         } else {
           // Créer
-          await prisma.heroImage.create({
+          await prisma.hero_images.create({
             data: {
               type: 'garden',
               name: image.name,

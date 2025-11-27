@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [users, total] = await Promise.all([
-      prisma.user.findMany({
+      prisma.users.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
           },
         },
       }),
-      prisma.user.count({ where }),
+      prisma.users.count({ where }),
     ]);
 
     return NextResponse.json({
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
     const validatedData = userCreateSchema.parse(body);
 
     // Vérifier si l'email existe déjà
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email: validatedData.email },
     });
 
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
     // Hasher le mot de passe
     const passwordHash = await bcrypt.hash(validatedData.password, 12);
 
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         email: validatedData.email,
         passwordHash,

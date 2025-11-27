@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Vérifier que le modèle existe
-    if (!prisma.heroImage) {
+    if (!prisma.hero_images) {
       console.error('Le modèle HeroImage n\'existe pas dans Prisma Client. Exécutez: npx prisma generate');
       return NextResponse.json(
         { 
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const images = await prisma.heroImage.findMany({
+    const images = await prisma.hero_images.findMany({
       where,
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     });
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = heroImageSchema.parse(body);
 
-    const image = await prisma.heroImage.create({
+    const image = await prisma.hero_images.create({
       data: validatedData,
     });
 

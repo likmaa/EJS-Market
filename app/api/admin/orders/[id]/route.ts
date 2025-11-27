@@ -26,7 +26,7 @@ export async function GET(
       );
     }
 
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { id },
       include: {
         user: {
@@ -87,7 +87,7 @@ export async function PUT(
     const body = await request.json();
     const validatedData = orderUpdateSchema.parse(body);
 
-    const order = await prisma.order.update({
+    const order = await prisma.orders.update({
       where: { id },
       data: validatedData,
       include: {

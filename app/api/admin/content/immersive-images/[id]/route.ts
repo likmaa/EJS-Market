@@ -31,7 +31,7 @@ export async function GET(
       );
     }
 
-    const image = await prisma.immersiveImage.findUnique({
+    const image = await prisma.immersive_images.findUnique({
       where: { id },
     });
 
@@ -70,7 +70,7 @@ export async function PUT(
     const body = await request.json();
     const validatedData = immersiveImageUpdateSchema.parse(body);
 
-    const image = await prisma.immersiveImage.update({
+    const image = await prisma.immersive_images.update({
       where: { id },
       data: validatedData,
     });
@@ -107,7 +107,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.immersiveImage.delete({
+    await prisma.immersive_images.delete({
       where: { id },
     });
 

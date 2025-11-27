@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const validatedData = changePasswordSchema.parse(body);
 
     // Récupérer l'utilisateur
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: session.user.id },
       select: { passwordHash: true },
     });
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     const newPasswordHash = await bcrypt.hash(validatedData.newPassword, 12);
 
     // Mettre à jour le mot de passe
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: session.user.id },
       data: { passwordHash: newPasswordHash },
     });

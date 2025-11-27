@@ -16,7 +16,7 @@ async function main() {
   const adminPassword = 'Admin123!';
   const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
 
-  const admin = await prisma.user.upsert({
+  const admin = await prisma.users.upsert({
     where: { email: adminEmail },
     update: {},
     create: {
@@ -813,7 +813,7 @@ async function main() {
 
   // Créer les produits
   for (const product of products) {
-    await prisma.product.upsert({
+    await prisma.products.upsert({
       where: { sku: product.sku },
       update: {},
       create: product,

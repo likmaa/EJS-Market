@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       where.type = type;
     }
 
-    const images = await prisma.heroImage.findMany({
+    const images = await prisma.hero_images.findMany({
       where,
       select: {
         id: true,

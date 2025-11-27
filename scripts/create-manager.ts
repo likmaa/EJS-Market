@@ -12,7 +12,7 @@ async function createManager() {
     console.log('🔐 Création d\'un utilisateur MANAGER...\n');
 
     // Vérifier si l'utilisateur existe déjà
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email },
     });
 
@@ -29,7 +29,7 @@ async function createManager() {
         return;
       } else {
         // Mettre à jour le rôle
-        const updatedUser = await prisma.user.update({
+        const updatedUser = await prisma.users.update({
           where: { email },
           data: { role: 'MANAGER' },
         });
@@ -45,7 +45,7 @@ async function createManager() {
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Créer l'utilisateur
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         email,
         passwordHash,

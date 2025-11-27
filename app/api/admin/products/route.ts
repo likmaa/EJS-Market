@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const products = await prisma.product.findMany({
+    const products = await prisma.products.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       take: 100,
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     const validatedData = productSchema.parse(body);
 
     // Vérifier si le SKU existe déjà
-    const existingProduct = await prisma.product.findUnique({
+    const existingProduct = await prisma.products.findUnique({
       where: { sku: validatedData.sku },
     });
 
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = await prisma.product.create({
+    const product = await prisma.products.create({
       data: validatedData,
     });
 
