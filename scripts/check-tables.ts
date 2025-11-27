@@ -8,7 +8,7 @@ async function checkTables() {
     
     // Vérifier Partner
     try {
-      const partnerCount = await prisma.partner.count();
+      const partnerCount = await prisma.partners.count();
       console.log(`✅ Table 'partners' existe (${partnerCount} enregistrements)`);
     } catch (error: any) {
       console.log(`❌ Table 'partners' n'existe pas: ${error.message}`);

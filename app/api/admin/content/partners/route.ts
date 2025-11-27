@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Vérifier que le modèle existe
-    if (!prisma.partner) {
+    if (!prisma.partners) {
       console.error('Le modèle Partner n\'existe pas dans Prisma Client. Exécutez: npx prisma generate');
       return NextResponse.json(
         { 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const partners = await prisma.partner.findMany({
+    const partners = await prisma.partners.findMany({
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     });
 
@@ -84,8 +84,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = partnerSchema.parse(body);
 
-    const partner = await prisma.partner.create({
-      data: validatedData,
+    const partner = await prisma.partners.create({
+      data: {
+        ...validatedData,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({ partner }, { status: 201 });

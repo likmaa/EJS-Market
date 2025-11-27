@@ -31,7 +31,7 @@ export async function GET(
       );
     }
 
-    const partner = await prisma.partner.findUnique({
+    const partner = await prisma.partners.findUnique({
       where: { id },
     });
 
@@ -71,7 +71,7 @@ export async function PUT(
     const body = await request.json();
     const validatedData = partnerUpdateSchema.parse(body);
 
-    const partner = await prisma.partner.update({
+    const partner = await prisma.partners.update({
       where: { id },
       data: validatedData,
     });
@@ -109,7 +109,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.partner.delete({
+    await prisma.partners.delete({
       where: { id },
     });
 

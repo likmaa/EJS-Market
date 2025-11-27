@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 // GET - Liste publique des partenaires actifs
 export async function GET() {
   try {
-    const partners = await prisma.partner.findMany({
+    const partners = await prisma.partners.findMany({
       where: { isActive: true },
       select: {
         id: true,

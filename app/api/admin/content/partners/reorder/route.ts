@@ -29,7 +29,7 @@ export async function PATCH(request: NextRequest) {
     // Mettre à jour l'ordre de tous les éléments en une transaction
     await prisma.$transaction(
       items.map((item) =>
-        prisma.partner.update({
+        prisma.partners.update({
           where: { id: item.id },
           data: { order: item.order },
         })

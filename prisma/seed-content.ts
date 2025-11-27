@@ -68,13 +68,13 @@ async function seedContent() {
       const partner = currentPartners[i];
       try {
         // Vérifier si le partenaire existe déjà
-        const existing = await prisma.partner.findFirst({
+        const existing = await prisma.partners.findFirst({
           where: { name: partner.name },
         });
 
         if (existing) {
           // Mettre à jour
-          await prisma.partner.update({
+          await prisma.partners.update({
             where: { id: existing.id },
             data: {
               logoPath: partner.local,
@@ -84,14 +84,17 @@ async function seedContent() {
               alt: `Logo ${partner.name}`,
               order: i,
               isActive: true,
+              updatedAt: new Date(),
             },
           });
         } else {
           // Créer
-          await prisma.partner.create({
+          await prisma.partners.create({
             data: {
+              id: crypto.randomUUID(),
               name: partner.name,
               logoPath: partner.local,
+              updatedAt: new Date(),
               cdnUrl: partner.cdn,
               width: 120,
               height: 40,
