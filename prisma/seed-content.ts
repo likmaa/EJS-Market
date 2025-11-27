@@ -273,28 +273,31 @@ async function seedContent() {
       const image = currentImmersiveImages[i];
       try {
         // Vérifier si l'image existe déjà
-        const existing = await prisma.immersiveImage.findFirst({
+        const existing = await prisma.immersive_images.findFirst({
           where: { name: image.name },
         });
 
         if (existing) {
           // Mettre à jour
-          await prisma.immersiveImage.update({
+          await prisma.immersive_images.update({
             where: { id: existing.id },
             data: {
               imageUrl: image.url,
               order: i,
               isActive: true,
+              updatedAt: new Date(),
             },
           });
         } else {
           // Créer
-          await prisma.immersiveImage.create({
+          await prisma.immersive_images.create({
             data: {
+              id: crypto.randomUUID(),
               name: image.name,
               imageUrl: image.url,
               order: i,
               isActive: true,
+              updatedAt: new Date(),
             },
           });
         }
