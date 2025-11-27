@@ -18,13 +18,15 @@ async function main() {
 
   const admin = await prisma.users.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
+      id: crypto.randomUUID(),
       email: adminEmail,
       passwordHash: adminPasswordHash,
       name: 'Administrateur',
       role: UserRole.ADMIN,
       isEmailVerified: true,
+      updatedAt: new Date(),
     },
   });
 
