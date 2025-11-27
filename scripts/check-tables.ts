@@ -16,7 +16,7 @@ async function checkTables() {
 
     // Vérifier Testimonial
     try {
-      const testimonialCount = await prisma.testimonial.count();
+      const testimonialCount = await prisma.testimonials.count();
       console.log(`✅ Table 'testimonials' existe (${testimonialCount} enregistrements)`);
     } catch (error: any) {
       console.log(`❌ Table 'testimonials' n'existe pas: ${error.message}`);

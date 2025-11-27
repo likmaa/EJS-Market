@@ -44,7 +44,7 @@ async function main() {
   ];
 
   for (const taxRate of taxRates) {
-    await prisma.taxRate.upsert({
+    await prisma.tax_rates.upsert({
       where: { countryCode: taxRate.countryCode },
       update: {},
       create: taxRate,
@@ -69,13 +69,17 @@ async function main() {
   ];
 
   for (const zone of shippingZones) {
-    const existing = await prisma.shippingZone.findFirst({
+    const existing = await prisma.shipping_zones.findFirst({
       where: { name: zone.name },
     });
     
     if (!existing) {
-      await prisma.shippingZone.create({
-        data: zone,
+      await prisma.shipping_zones.create({
+        data: {
+          ...zone,
+          id: crypto.randomUUID(),
+          updatedAt: new Date(),
+        },
       });
       console.log(`✅ Shipping zone: ${zone.name}`);
     }
@@ -104,8 +108,12 @@ async function main() {
   ];
 
   for (const method of shippingMethods) {
-    await prisma.shippingMethod.create({
-      data: method,
+    await prisma.shipping_methods.create({
+      data: {
+        ...method,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
     console.log(`✅ Shipping method: ${method.name}`);
   }

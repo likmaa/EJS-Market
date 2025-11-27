@@ -15,8 +15,9 @@ export async function logContentChange(
   userName?: string
 ) {
   try {
-    await prisma.contentHistory.create({
+    await prisma.content_history.create({
       data: {
+        id: crypto.randomUUID(),
         contentType,
         contentId,
         action,
@@ -36,7 +37,7 @@ export async function getContentHistory(
   contentId: string
 ) {
   try {
-    return await prisma.contentHistory.findMany({
+    return await prisma.content_history.findMany({
       where: {
         contentType,
         contentId,

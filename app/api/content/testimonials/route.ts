@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 // GET - Liste publique des témoignages actifs
 export async function GET() {
   try {
-    const testimonials = await prisma.testimonial.findMany({
+    const testimonials = await prisma.testimonials.findMany({
       where: { isActive: true },
       select: {
         id: true,

@@ -28,7 +28,7 @@ export async function PATCH(request: NextRequest) {
 
     await prisma.$transaction(
       items.map((item) =>
-        prisma.testimonial.update({
+        prisma.testimonials.update({
           where: { id: item.id },
           data: { order: item.order },
         })

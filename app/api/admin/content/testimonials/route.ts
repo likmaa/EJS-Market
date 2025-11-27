@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Vérifier que le modèle existe
-    if (!prisma.testimonial) {
+    if (!prisma.testimonials) {
       console.error('Le modèle Testimonial n\'existe pas dans Prisma Client. Exécutez: npx prisma generate');
       return NextResponse.json(
         { 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const testimonials = await prisma.testimonial.findMany({
+    const testimonials = await prisma.testimonials.findMany({
       orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     });
 
@@ -84,8 +84,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = testimonialSchema.parse(body);
 
-    const testimonial = await prisma.testimonial.create({
-      data: validatedData,
+    const testimonial = await prisma.testimonials.create({
+      data: {
+        ...validatedData,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({ testimonial }, { status: 201 });

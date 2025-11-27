@@ -31,7 +31,7 @@ export async function GET(
       );
     }
 
-    const testimonial = await prisma.testimonial.findUnique({
+    const testimonial = await prisma.testimonials.findUnique({
       where: { id },
     });
 
@@ -70,7 +70,7 @@ export async function PUT(
     const body = await request.json();
     const validatedData = testimonialUpdateSchema.parse(body);
 
-    const testimonial = await prisma.testimonial.update({
+    const testimonial = await prisma.testimonials.update({
       where: { id },
       data: validatedData,
     });
@@ -107,7 +107,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.testimonial.delete({
+    await prisma.testimonials.delete({
       where: { id },
     });
 

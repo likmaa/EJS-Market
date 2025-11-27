@@ -8,7 +8,7 @@ const DEFAULT_TEXT =
 
 export async function GET() {
   try {
-    const settings = await prisma.siteSettings.findUnique({
+    const settings = await prisma.site_settings.findUnique({
       where: { id: 'global' },
     });
 
@@ -54,7 +54,7 @@ export async function PUT(req: Request) {
       );
     }
 
-    const settings = await prisma.siteSettings.upsert({
+    const settings = await prisma.site_settings.upsert({
       where: { id: 'global' },
       update: { newsBarText: text },
       create: {

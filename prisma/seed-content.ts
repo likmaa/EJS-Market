@@ -118,7 +118,7 @@ async function seedContent() {
       const testimonial = currentTestimonials[i];
       try {
         // Vérifier si le témoignage existe déjà
-        const existing = await prisma.testimonial.findFirst({
+        const existing = await prisma.testimonials.findFirst({
           where: { 
             name: testimonial.name,
             product: testimonial.product,
@@ -127,7 +127,7 @@ async function seedContent() {
 
         if (existing) {
           // Mettre à jour
-          await prisma.testimonial.update({
+          await prisma.testimonials.update({
             where: { id: existing.id },
             data: {
               initial: testimonial.initial,
@@ -143,8 +143,9 @@ async function seedContent() {
           });
         } else {
           // Créer
-          await prisma.testimonial.create({
+          await prisma.testimonials.create({
             data: {
+              id: crypto.randomUUID(),
               name: testimonial.name,
               initial: testimonial.initial,
               rating: testimonial.rating,
@@ -156,6 +157,7 @@ async function seedContent() {
               date: testimonial.date,
               order: i,
               isActive: true,
+              updatedAt: new Date(),
             },
           });
         }
