@@ -23,7 +23,7 @@ model addresses {
   phone        String?
   isDefault    Boolean  @default(false)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @updatedAt
   users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -57,7 +57,7 @@ model hero_images {
   order        Int      @default(0)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @updatedAt
 
   @@index([isActive])
   @@index([order])
@@ -75,7 +75,7 @@ model immersive_images {
   order        Int      @default(0)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @updatedAt
 
   @@index([isActive])
   @@index([order])
@@ -110,7 +110,7 @@ model orders {
   paymentMethod   String?
   trackingNumber  String?
   createdAt       DateTime      @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime      @updatedAt
   order_items     order_items[]
   users           users         @relation(fields: [userId], references: [id])
 
@@ -130,7 +130,7 @@ model partners {
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
 
   @@index([isActive])
   @@index([order])
@@ -152,7 +152,7 @@ model products {
   attributes     Json?
   isActive       Boolean       @default(true)
   createdAt      DateTime      @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime      @updatedAt
   order_items    order_items[]
 
   @@index([brand])
@@ -169,7 +169,7 @@ model shipping_methods {
   maxDimension Float?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime @updatedAt
 }
 
 model shipping_zones {
@@ -180,14 +180,14 @@ model shipping_zones {
   pricePerKg Int?
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime @updatedAt
 }
 
 model site_settings {
   id          String   @id @default("global")
   newsBarText String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime @updatedAt
 }
 
 model tax_rates {
@@ -197,7 +197,7 @@ model tax_rates {
   reducedRate Float?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime @updatedAt
 }
 
 model testimonials {
@@ -211,7 +211,7 @@ model testimonials {
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
 
   @@index([isActive])
   @@index([order])
@@ -226,7 +226,7 @@ model users {
   isEmailVerified Boolean     @default(false)
   vatNumber       String?
   createdAt       DateTime    @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime    @updatedAt
   addresses       addresses[]
   orders          orders[]
 

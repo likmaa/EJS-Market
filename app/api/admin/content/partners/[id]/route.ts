@@ -73,7 +73,10 @@ export async function PUT(
 
     const partner = await prisma.partners.update({
       where: { id },
-      data: validatedData,
+      data: {
+        ...validatedData,
+        updatedAt: new Date(),
+      },
     });
 
     return NextResponse.json({ partner });
