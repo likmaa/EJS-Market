@@ -2,8 +2,8 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, Suspense, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -13,12 +13,27 @@ import { Button } from '@/components/ui/Button';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Rediriger automatiquement si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (session?.user) {
+      const userRole = session.user.role;
+      if (userRole === 'ADMIN' || userRole === 'MANAGER') {
+        router.push('/admin');
+      } else if (callbackUrl && callbackUrl !== '/') {
+        router.push(callbackUrl);
+      } else {
+        router.push('/');
+      }
+    }
+  }, [session, router, callbackUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,15 +51,20 @@ function LoginForm() {
         setError('Email ou mot de passe incorrect');
         setIsLoading(false);
       } else {
-        // Récupérer la session pour vérifier le rôle
-        const sessionResponse = await fetch('/api/auth/session');
-        const session = await sessionResponse.json();
+        // Attendre un peu pour que la session soit mise à jour
+        await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Rediriger les admins vers /admin, sinon utiliser callbackUrl
-        if (session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER') {
+        // Récupérer la session mise à jour
+        const sessionResponse = await fetch('/api/auth/session');
+        const sessionData = await sessionResponse.json();
+        
+        // Rediriger selon le rôle
+        if (sessionData?.user?.role === 'ADMIN' || sessionData?.user?.role === 'MANAGER') {
           router.push('/admin');
-        } else {
+        } else if (callbackUrl && callbackUrl !== '/') {
           router.push(callbackUrl);
+        } else {
+          router.push('/');
         }
         router.refresh();
       }
