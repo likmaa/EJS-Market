@@ -36,7 +36,16 @@ function LoginForm() {
         setError('Email ou mot de passe incorrect');
         setIsLoading(false);
       } else {
-        router.push(callbackUrl);
+        // Récupérer la session pour vérifier le rôle
+        const sessionResponse = await fetch('/api/auth/session');
+        const session = await sessionResponse.json();
+        
+        // Rediriger les admins vers /admin, sinon utiliser callbackUrl
+        if (session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER') {
+          router.push('/admin');
+        } else {
+          router.push(callbackUrl);
+        }
         router.refresh();
       }
     } catch (err) {

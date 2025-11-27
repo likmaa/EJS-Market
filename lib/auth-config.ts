@@ -80,6 +80,14 @@ export const authOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }: any) {
+      // Si l'URL de redirection est relative, la rendre absolue
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      // Si l'URL est sur le même domaine, l'utiliser
+      if (new URL(url).origin === baseUrl) return url;
+      // Sinon, rediriger vers la base
+      return baseUrl;
+    },
   },
   pages: {
     signIn: '/login',
