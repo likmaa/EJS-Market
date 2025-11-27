@@ -35,11 +35,13 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
+// En production (Vercel), créer toujours une nouvelle instance pour éviter les problèmes de cache
+// En développement, réutiliser l'instance globale pour éviter les connexions multiples
 export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient(prismaClientOptions)
+  process.env.NODE_ENV === 'production'
+    ? new PrismaClient(prismaClientOptions)
+    : (globalForPrisma.prisma ?? new PrismaClient(prismaClientOptions))
 
-// En production (Vercel), ne pas réutiliser l'instance globale pour éviter les problèmes de connexion
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
 }
