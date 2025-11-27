@@ -46,8 +46,12 @@ async function main() {
   for (const taxRate of taxRates) {
     await prisma.tax_rates.upsert({
       where: { countryCode: taxRate.countryCode },
-      update: {},
-      create: taxRate,
+      update: { updatedAt: new Date() },
+      create: {
+        ...taxRate,
+        id: crypto.randomUUID(),
+        updatedAt: new Date(),
+      },
     });
     console.log(`✅ Tax rate for ${taxRate.countryCode}: ${taxRate.rate * 100}%`);
   }
