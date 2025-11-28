@@ -40,6 +40,9 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const stockFilter = searchParams.get('stock');
     const search = searchParams.get('search');
+    const active = searchParams.get('active');
+    const brand = searchParams.get('brand');
+    const sort = searchParams.get('sort') || 'updated_desc';
 
     const where: any = {};
 
@@ -53,6 +56,16 @@ export async function GET(request: NextRequest) {
       where.stock = 0;
     }
 
+    if (active === 'active') {
+      where.isActive = true;
+    } else if (active === 'inactive') {
+      where.isActive = false;
+    }
+
+    if (brand) {
+      where.brand = { contains: brand, mode: 'insensitive' };
+    }
+
     if (search) {
       where.OR = [
         { sku: { contains: search, mode: 'insensitive' } },
@@ -60,9 +73,26 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const products = await prisma.products.findMany({
+    let orderBy: any = { updatedAt: 'desc' };
+
+    if (sort === 'price_desc') {
+      orderBy = { priceHT: 'desc' };
+    } else if (sort === 'stock_asc') {
+      orderBy = { stock: 'asc' };
+    } else if (sort === 'best_sellers') {
+      // Tri par meilleures ventes (quantité totale vendue)
+      orderBy = {
+        order_items: {
+          _sum: {
+            quantity: 'desc',
+          },
+        },
+      };
+    }
+
+    const products = await (prisma as any).products.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
       take: 100,
     });
 
@@ -92,7 +122,7 @@ export async function POST(request: NextRequest) {
     const validatedData = productSchema.parse(body);
 
     // Vérifier si le SKU existe déjà
-    const existingProduct = await prisma.products.findUnique({
+    const existingProduct = await (prisma as any).products.findUnique({
       where: { sku: validatedData.sku },
     });
 
@@ -103,7 +133,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const product = await prisma.products.create({
+    const product = await (prisma as any).products.create({
       data: {
         ...validatedData,
         id: crypto.randomUUID(),

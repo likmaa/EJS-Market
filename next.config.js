@@ -22,8 +22,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['framer-motion', '@headlessui/react', 'react-fast-marquee'],
   },
-  // Optimisations de compilation
-  swcMinify: true,
   // Headers de sécurité
   async headers() {
     return [

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import dynamic from "next/dynamic";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { ComparisonProvider } from "@/contexts/ComparisonContext";
@@ -8,15 +7,8 @@ import { Providers } from "@/app/providers";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ClientLayout } from "@/components/ClientLayout";
 import { ConditionalHeader, ConditionalFooter } from "@/components/ConditionalLayout";
+import { DynamicLayoutComponents } from "@/components/DynamicLayoutComponents";
 import "./globals.css";
-
-const CookieConsentModal = dynamic(() => import("@/components/CookieConsentModal").then(mod => ({ default: mod.CookieConsentModal })), {
-  ssr: false,
-});
-
-const ServiceWorkerRegistration = dynamic(() => import("@/components/ServiceWorkerRegistration").then(mod => ({ default: mod.ServiceWorkerRegistration })), {
-  ssr: false,
-});
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -65,9 +57,8 @@ export default function RootLayout({
                     </ErrorBoundary>
                     <ConditionalFooter />
                     <ErrorBoundary>
-                      <CookieConsentModal />
+                      <DynamicLayoutComponents />
                     </ErrorBoundary>
-                    <ServiceWorkerRegistration />
                   </ClientLayout>
                 </ComparisonProvider>
               </WishlistProvider>

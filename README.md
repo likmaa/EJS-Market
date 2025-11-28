@@ -4,8 +4,8 @@ Plateforme E-commerce multi-produits (High-tech + Jardinage) pour le marché eur
 
 ## 🚀 Stack Technique
 
-- **Frontend/Backend** : Next.js 14+ (App Router) + TypeScript
-- **Base de données** : PostgreSQL (Supabase) + Prisma ORM
+- **Frontend/Backend** : Next.js 15+ (App Router) + TypeScript
+- **Base de données** : PostgreSQL managé (Neon) + Prisma ORM
 - **Authentification** : NextAuth.js
 - **Paiements** : Stripe
 - **Recherche** : Algolia
@@ -61,7 +61,7 @@ Toute la documentation du projet est disponible dans le dossier [`docs/`](./docs
 - Validation Zod sur tous les inputs
 - Protection CSRF/XSS intégrée
 - 3D Secure via Stripe (DSP2)
-- Backups automatiques (Supabase)
+- Backups automatiques (fournisseur PostgreSQL managé)
 
 ## 📝 License
 

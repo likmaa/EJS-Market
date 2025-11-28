@@ -17,7 +17,7 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Log la connection string (masquée) pour debug
+  // Log la connection string (masquée) pour debug
 if (process.env.NODE_ENV === 'production') {
   const dbUrl = process.env.DATABASE_URL;
   const maskedUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':****@') : 'undefined';
@@ -26,12 +26,8 @@ if (process.env.NODE_ENV === 'production') {
   // Détecter le provider
   if (dbUrl?.includes('.neon.tech')) {
     console.log('[Prisma] Provider: Neon');
-  } else if (dbUrl?.includes('.pooler.supabase.com')) {
-    console.log('[Prisma] Provider: Supabase (Pooler)');
-  } else if (dbUrl?.includes('.supabase.co')) {
-    console.log('[Prisma] Provider: Supabase (Direct)');
   } else {
-    console.log('[Prisma] Provider: Unknown');
+    console.log('[Prisma] Provider: PostgreSQL (generic)');
   }
 }
 

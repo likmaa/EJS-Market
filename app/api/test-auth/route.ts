@@ -8,9 +8,7 @@ export async function GET() {
       success: true, 
       nextAuthUrl: process.env.NEXTAUTH_URL || 'not set',
       nextAuthSecret: process.env.NEXTAUTH_SECRET ? 'set (' + process.env.NEXTAUTH_SECRET.length + ' chars)' : 'not set',
-      databaseUrl: process.env.DATABASE_URL ? 
-        (process.env.DATABASE_URL.includes('.pooler.supabase.com') ? 'using pooler' : 'not using pooler') : 
-        'not set'
+      databaseUrl: process.env.DATABASE_URL ? 'set' : 'not set'
     });
   } catch (error) {
     return NextResponse.json({ 

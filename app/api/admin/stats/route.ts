@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
     const yearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
+    const last30DaysStart = new Date(today.getTime() - 29 * 24 * 60 * 60 * 1000);
 
     // Revenus
     const revenueToday = await prisma.orders.aggregate({
@@ -81,6 +82,70 @@ export async function GET(request: NextRequest) {
       where: { createdAt: { gte: monthAgo } },
     });
 
+    // Dernières commandes (activité récente)
+    const recentOrders = await prisma.orders.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        createdAt: true,
+        status: true,
+        totalTTC: true,
+        users: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    // Revenus quotidiens sur 30 jours (pour graphique)
+    const ordersLast30Days = await prisma.orders.findMany({
+      where: {
+        status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
+        createdAt: { gte: last30DaysStart },
+      },
+      select: {
+        createdAt: true,
+        totalTTC: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const dayMs = 24 * 60 * 60 * 1000;
+    const dailyMap = new Map<
+      string,
+      {
+        total: number;
+        orders: number;
+      }
+    >();
+
+    for (const order of ordersLast30Days) {
+      const key = order.createdAt.toISOString().slice(0, 10); // YYYY-MM-DD
+      const existing = dailyMap.get(key) || { total: 0, orders: 0 };
+      existing.total += order.totalTTC;
+      existing.orders += 1;
+      dailyMap.set(key, existing);
+    }
+
+    const dailyRevenue = Array.from({ length: 30 }).map((_, index) => {
+      const dateObj = new Date(last30DaysStart.getTime() + index * dayMs);
+      const key = dateObj.toISOString().slice(0, 10);
+      const entry = dailyMap.get(key);
+
+      return {
+        date: key,
+        label: dateObj.toLocaleDateString('fr-FR', {
+          day: '2-digit',
+          month: '2-digit',
+        }),
+        total: entry?.total || 0,
+        orders: entry?.orders || 0,
+      };
+    });
+
     // Produits
     const totalProducts = await prisma.products.count();
     const lowStockProducts = await prisma.products.count({
@@ -119,6 +184,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Répartition des statuts de commandes (pour diagramme)
+    const statusCounts = await prisma.orders.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+
+    const statusBreakdown = statusCounts.map((item) => ({
+      status: item.status,
+      count: item._count.status,
+    }));
+
     return NextResponse.json({
       revenue: {
         today: revenueToday._sum.totalTTC || 0,
@@ -137,6 +215,9 @@ export async function GET(request: NextRequest) {
       },
       pendingOrders,
       topProducts,
+      recentOrders,
+      dailyRevenue,
+      statusBreakdown,
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des statistiques:', error);

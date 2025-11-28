@@ -14,6 +14,7 @@ interface Order {
     id: string;
     email: string;
     name: string | null;
+    role?: string | null;
   };
   totalTTC: number;
   status: string;
@@ -21,6 +22,8 @@ interface Order {
   order_items: Array<{
     quantity: number;
   }>;
+  shippingAddress?: any;
+  paymentMethod?: string | null;
 }
 
 const statusColors = {
@@ -43,11 +46,13 @@ const statusLabels = {
   REFUNDED: 'Remboursée',
 };
 
+type StatusFilter = 'all' | keyof typeof statusLabels;
+
 export default function AdminOrdersPage() {
   const { permissions } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -83,6 +88,16 @@ export default function AdminOrdersPage() {
     }).format(date);
   };
 
+  const getCountryLabel = (order: Order) => {
+    const address = order.shippingAddress as any;
+    if (!address) return '';
+    if (address.country && address.city) {
+      return `${address.country} · ${address.postalCode ?? ''} ${address.city}`.trim();
+    }
+    if (address.country) return address.country;
+    return '';
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -111,36 +126,58 @@ export default function AdminOrdersPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Recherche
-              </label>
-              <input
-                type="text"
-                placeholder="ID, client, email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
-              />
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Recherche
+                </label>
+                <input
+                  type="text"
+                  placeholder="ID, client, email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="block text-sm font-medium text-gray-700">
+                  Statut
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFilterStatus('all')}
+                    className={`px-3 py-1 rounded-full text-xs md:text-sm border transition-colors ${
+                      filterStatus === 'all'
+                        ? 'bg-violet-electric text-white border-violet-electric'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Tous
+                  </button>
+                  {Object.entries(statusLabels).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setFilterStatus(value as StatusFilter)}
+                      className={`px-3 py-1 rounded-full text-xs md:text-sm border transition-colors ${
+                        filterStatus === value
+                          ? 'bg-violet-electric text-white border-violet-electric'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Statut
-              </label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
-              >
-                <option value="all">Tous les statuts</option>
-                {Object.entries(statusLabels).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {filterStatus !== 'all' && (
+              <p className="text-xs text-gray-500">
+                Filtre actif : {statusLabels[filterStatus as keyof typeof statusLabels]}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -201,11 +238,23 @@ export default function AdminOrdersPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="font-medium text-gray-900">
-                                {order.users.name || 'Client'}
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <div className="font-medium text-gray-900">
+                                  {order.users.name || 'Client'}
+                                </div>
+                                {order.users.role === 'B2B_CUSTOMER' && (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800">
+                                    B2B
+                                  </span>
+                                )}
                               </div>
                               <div className="text-sm text-gray-500">{order.users.email}</div>
+                              {getCountryLabel(order) && (
+                                <div className="text-xs text-gray-400">
+                                  {getCountryLabel(order)}
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">

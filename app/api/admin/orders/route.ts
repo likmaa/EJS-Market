@@ -30,8 +30,16 @@ export async function GET(request: NextRequest) {
     if (search) {
       where.OR = [
         { id: { contains: search, mode: 'insensitive' } },
-        { user: { email: { contains: search, mode: 'insensitive' } } },
-        { user: { name: { contains: search, mode: 'insensitive' } } },
+        {
+          users: {
+            email: { contains: search, mode: 'insensitive' },
+          },
+        },
+        {
+          users: {
+            name: { contains: search, mode: 'insensitive' },
+          },
+        },
       ];
     }
 
@@ -43,6 +51,7 @@ export async function GET(request: NextRequest) {
             id: true,
             email: true,
             name: true,
+            role: true,
           },
         },
         order_items: {

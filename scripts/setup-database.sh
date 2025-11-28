@@ -29,7 +29,7 @@ else
     echo ""
     echo "Choisissez une option :"
     echo "1. Installer PostgreSQL localement (macOS avec Homebrew)"
-    echo "2. Utiliser Supabase (Cloud, gratuit, recommandé)"
+    echo "2. Utiliser une base PostgreSQL managée (Neon, Supabase, etc.)"
     echo ""
     read -p "Votre choix (1 ou 2): " choice
     
@@ -59,13 +59,11 @@ else
         fi
     elif [ "$choice" == "2" ]; then
         echo ""
-        echo "🌐 Configuration Supabase :"
-        echo "1. Allez sur https://supabase.com"
-        echo "2. Créez un compte (gratuit)"
-        echo "3. Créez un nouveau projet"
-        echo "4. Notez le mot de passe de la base de données"
-        echo "5. Dans Settings > Database, copiez la Connection string (URI)"
-        echo "6. Mettez à jour DATABASE_URL dans .env.local"
+        echo "🌐 Configuration d'une base PostgreSQL managée (ex: Neon) :"
+        echo "1. Allez sur https://neon.tech (ou votre fournisseur PostgreSQL managé)"
+        echo "2. Créez un compte et un projet"
+        echo "3. Copiez la connection string PostgreSQL (URI)"
+        echo "4. Mettez à jour DATABASE_URL dans .env.local"
         echo ""
         echo "Une fois fait, appuyez sur Entrée pour continuer..."
         read

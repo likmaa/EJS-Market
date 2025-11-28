@@ -21,6 +21,9 @@ interface Product {
   images: string[];
 }
 
+type ActiveFilter = 'all' | 'active' | 'inactive';
+type SortOption = 'updated_desc' | 'price_desc' | 'stock_asc' | 'best_sellers';
+
 export default function AdminProductsPage() {
   const { permissions } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,6 +31,9 @@ export default function AdminProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStock, setFilterStock] = useState('all');
+  const [filterActive, setFilterActive] = useState<ActiveFilter>('all');
+  const [filterBrand, setFilterBrand] = useState('');
+  const [sort, setSort] = useState<SortOption>('updated_desc');
 
   useEffect(() => {
     async function fetchProducts() {
@@ -36,6 +42,9 @@ export default function AdminProductsPage() {
         if (filterCategory !== 'all') params.append('category', filterCategory);
         if (filterStock !== 'all') params.append('stock', filterStock);
         if (searchTerm) params.append('search', searchTerm);
+         if (filterActive !== 'all') params.append('active', filterActive);
+         if (filterBrand) params.append('brand', filterBrand);
+         if (sort && sort !== 'updated_desc') params.append('sort', sort);
 
         const response = await fetch(`/api/admin/products?${params.toString()}`);
         if (response.ok) {
@@ -50,7 +59,7 @@ export default function AdminProductsPage() {
     }
 
     fetchProducts();
-  }, [searchTerm, filterCategory, filterStock]);
+  }, [searchTerm, filterCategory, filterStock, filterActive, filterBrand, sort]);
 
   const getProductName = (name: any): string => {
     if (typeof name === 'string') return name;
@@ -98,46 +107,122 @@ export default function AdminProductsPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Recherche
-              </label>
-              <input
-                type="text"
-                placeholder="Nom, SKU..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
-              />
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Recherche
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nom, SKU..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Catégorie
+                </label>
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+                >
+                  <option value="all">Toutes</option>
+                  <option value="electronics">Électronique</option>
+                  <option value="garden">Jardin</option>
+                  <option value="photo">Photo</option>
+                  <option value="mobility">E-Mobilité</option>
+                  <option value="tools">Outils</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Marque
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex : Apple, Bosch..."
+                  value={filterBrand}
+                  onChange={(e) => setFilterBrand(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Stock
+                </label>
+                <select
+                  value={filterStock}
+                  onChange={(e) => setFilterStock(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+                >
+                  <option value="all">Tous</option>
+                  <option value="low">Stock faible (&lt;5)</option>
+                  <option value="out">Rupture de stock</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Catégorie
-              </label>
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
-              >
-                <option value="all">Toutes</option>
-                <option value="electronics">Électronique</option>
-                <option value="garden">Jardin</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Stock
-              </label>
-              <select
-                value={filterStock}
-                onChange={(e) => setFilterStock(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-electric focus:border-transparent"
-              >
-                <option value="all">Tous</option>
-                <option value="low">Stock faible (&lt;5)</option>
-                <option value="out">Rupture de stock</option>
-              </select>
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">
+                  Statut
+                </span>
+                <div className="inline-flex rounded-full bg-gray-50 border border-gray-200 p-1 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setFilterActive('all')}
+                    className={`px-3 py-1 rounded-full transition-colors ${
+                      filterActive === 'all'
+                        ? 'bg-violet-electric text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Tous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterActive('active')}
+                    className={`px-3 py-1 rounded-full transition-colors ${
+                      filterActive === 'active'
+                        ? 'bg-violet-electric text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Actifs
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFilterActive('inactive')}
+                    className={`px-3 py-1 rounded-full transition-colors ${
+                      filterActive === 'inactive'
+                        ? 'bg-violet-electric text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Inactifs
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-700">
+                  Tri
+                </span>
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortOption)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-violet-electric focus:border-transparent"
+                >
+                  <option value="updated_desc">Derniers modifiés</option>
+                  <option value="best_sellers">Meilleures ventes</option>
+                  <option value="price_desc">Prix décroissant</option>
+                  <option value="stock_asc">Stock croissant</option>
+                </select>
+              </div>
             </div>
           </div>
         </CardContent>

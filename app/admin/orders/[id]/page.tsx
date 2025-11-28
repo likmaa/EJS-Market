@@ -1,58 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
-// Données mockées - à remplacer par des appels API
-const mockOrder = {
-  id: 'ORD-1001',
-  customer: {
-    name: 'Jean Dupont',
-    email: 'jean.dupont@example.com',
-    phone: '+33 6 12 34 56 78',
-  },
-  status: 'PAID',
-  totalHT: 99917,
-  totalTTC: 119900,
-  vatAmount: 19983,
-  shippingCost: 0,
-  shippingAddress: {
-    firstName: 'Jean',
-    lastName: 'Dupont',
-    addressLine1: '123 Rue de la République',
-    addressLine2: 'Appartement 4B',
-    city: 'Paris',
-    postalCode: '75001',
-    country: 'FR',
-    phone: '+33 6 12 34 56 78',
-  },
-  billingAddress: {
-    firstName: 'Jean',
-    lastName: 'Dupont',
-    addressLine1: '123 Rue de la République',
-    city: 'Paris',
-    postalCode: '75001',
-    country: 'FR',
-  },
-  items: [
-    {
-      id: '1',
-      productId: '1',
-      name: 'iPhone 15 Pro',
-      sku: 'APP-IPH-0001',
-      quantity: 1,
-      priceHT: 99917,
-      vatRate: 0.2,
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100',
-    },
-  ],
-  createdAt: '2024-11-25T10:30:00Z',
-  updatedAt: '2024-11-25T10:35:00Z',
-};
+interface OrderItem {
+  id: string;
+  quantity: number;
+  priceHT: number;
+  vatRate: number;
+  products: {
+    id: string;
+    name: any;
+    sku: string;
+    images: string[];
+  } | null;
+}
+
+interface Address {
+  firstName?: string;
+  lastName?: string;
+  addressLine1?: string;
+  addressLine2?: string | null;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string | null;
+}
+
+interface Order {
+  id: string;
+  status: string;
+  totalHT: number;
+  totalTTC: number;
+  vatAmount: number;
+  shippingCost: number;
+  shippingAddress: Address | null;
+  billingAddress: Address | null;
+  createdAt: string;
+  updatedAt: string;
+  users: {
+    name: string | null;
+    email: string;
+  };
+  order_items: OrderItem[];
+}
 
 const statusColors = {
   PENDING: 'bg-yellow-100 text-yellow-800',
@@ -77,13 +72,38 @@ const statusLabels = {
 export default function OrderDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const order = mockOrder; // TODO: Récupérer depuis l'API avec l'id
+  const [order, setOrder] = useState<Order | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [isProcessingRefund, setIsProcessingRefund] = useState(false);
   const [refundData, setRefundData] = useState({
     amount: '',
     reason: '',
   });
+
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/admin/orders/${id}`);
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
+          throw new Error(data?.error || 'Erreur lors du chargement de la commande');
+        }
+        const data = await response.json();
+        setOrder(data.order);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur lors du chargement de la commande');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (id) {
+      fetchOrder();
+    }
+  }, [id]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -95,6 +115,32 @@ export default function OrderDetailPage() {
       minute: '2-digit',
     }).format(date);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-electric mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement de la commande...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="space-y-4">
+        <Link href="/admin/orders" className="text-violet-electric hover:underline text-sm">
+          ← Retour à la liste des commandes
+        </Link>
+        <div className="text-center py-12">
+          <p className="text-gray-600">
+            {error || "Commande introuvable ou erreur lors du chargement."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleRefund = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,7 +173,10 @@ export default function OrderDetailPage() {
     }
   };
 
-  const canRefund = order.status !== 'REFUNDED' && order.status !== 'CANCELLED' && order.status === 'PAID';
+  const canRefund =
+    order.status !== 'REFUNDED' &&
+    order.status !== 'CANCELLED' &&
+    order.status === 'PAID';
 
   return (
     <div className="space-y-6">
@@ -169,21 +218,30 @@ export default function OrderDetailPage() {
                 Articles de la commande
               </h3>
               <div className="space-y-4">
-                {order.items.map((item) => (
+                {order.order_items.map((item) => {
+                  const productName =
+                    typeof item.products?.name === 'object'
+                      ? item.products.name.fr || item.products.name.en || 'Produit'
+                      : item.products?.name || 'Produit';
+                  const sku = item.products?.sku || '—';
+                  const image =
+                    item.products?.images?.[0] ||
+                    'https://via.placeholder.com/100x100.png?text=Produit';
+                  return (
                   <div
                     key={item.id}
                     className="flex items-center gap-4 p-4 rounded-lg bg-gray-50"
                   >
                     <div className="relative w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={image}
+                        alt={productName}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{item.name}</p>
-                      <p className="text-sm text-gray-500">SKU: {item.sku}</p>
+                      <p className="font-medium text-gray-900">{productName}</p>
+                      <p className="text-sm text-gray-500">SKU: {sku}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-500">Quantité: {item.quantity}</p>
@@ -195,7 +253,8 @@ export default function OrderDetailPage() {
                       </p>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -206,22 +265,30 @@ export default function OrderDetailPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Adresse de livraison
               </h3>
-              <div className="text-sm text-gray-700 space-y-1">
-                <p className="font-medium">
-                  {order.shippingAddress.firstName} {order.shippingAddress.lastName}
+              {order.shippingAddress ? (
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p className="font-medium">
+                    {order.shippingAddress.firstName}{' '}
+                    {order.shippingAddress.lastName}
+                  </p>
+                  <p>{order.shippingAddress.addressLine1}</p>
+                  {order.shippingAddress.addressLine2 && (
+                    <p>{order.shippingAddress.addressLine2}</p>
+                  )}
+                  <p>
+                    {order.shippingAddress.postalCode}{' '}
+                    {order.shippingAddress.city}
+                  </p>
+                  <p>{order.shippingAddress.country}</p>
+                  {order.shippingAddress.phone && (
+                    <p className="mt-2">Tél: {order.shippingAddress.phone}</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Aucune adresse de livraison renseignée.
                 </p>
-                <p>{order.shippingAddress.addressLine1}</p>
-                {order.shippingAddress.addressLine2 && (
-                  <p>{order.shippingAddress.addressLine2}</p>
-                )}
-                <p>
-                  {order.shippingAddress.postalCode} {order.shippingAddress.city}
-                </p>
-                <p>{order.shippingAddress.country}</p>
-                {order.shippingAddress.phone && (
-                  <p className="mt-2">Tél: {order.shippingAddress.phone}</p>
-                )}
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -233,10 +300,12 @@ export default function OrderDetailPage() {
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Client</h3>
               <div className="space-y-2 text-sm">
-                <p className="font-medium text-gray-900">{order.customer.name}</p>
-                <p className="text-gray-600">{order.customer.email}</p>
-                {order.customer.phone && (
-                  <p className="text-gray-600">{order.customer.phone}</p>
+                <p className="font-medium text-gray-900">
+                  {order.users.name || order.users.email}
+                </p>
+                <p className="text-gray-600">{order.users.email}</p>
+                {order.shippingAddress?.phone && (
+                  <p className="text-gray-600">{order.shippingAddress.phone}</p>
                 )}
               </div>
             </CardContent>

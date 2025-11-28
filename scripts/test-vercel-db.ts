@@ -34,10 +34,10 @@ async function testVercelConnection() {
         console.log(`   Stack: ${dbData.stack.substring(0, 200)}...`);
       }
       
-      // Vérifier si c'est une erreur Supabase
+      // Vérifier si l'ancienne URL de base de données est encore utilisée
       if (dbData.error?.includes('supabase.com')) {
         console.log('\n⚠️  PROBLÈME DÉTECTÉ:');
-        console.log('   La DATABASE_URL sur Vercel contient encore "supabase.com"');
+        console.log('   La DATABASE_URL sur Vercel pointe encore vers l\'ancienne base Supabase');
         console.log('   → Va sur Vercel → Settings → Environment Variables');
         console.log('   → Supprime DATABASE_URL et recrée-la avec la connection string Neon');
       }
@@ -77,7 +77,7 @@ async function testVercelConnection() {
       console.log('❌ RÉSULTAT: Vercel n\'est PAS connecté à la base de données');
       console.log('\n📋 Actions à faire:');
       console.log('   1. Va sur Vercel → Settings → Environment Variables');
-      console.log('   2. Vérifie que DATABASE_URL contient "neon.tech" (pas "supabase.com")');
+      console.log('   2. Vérifie que DATABASE_URL contient "neon.tech" (et plus aucune référence à Supabase)');
       console.log('   3. Si nécessaire, supprime et recrée DATABASE_URL');
       console.log('   4. Redéploie sur Vercel');
     }

@@ -14,6 +14,9 @@ import {
   WarningIcon,
 } from '@/components/admin/AdminIcons';
 
+type Period = 'today' | 'week' | 'month';
+type ChartMode = 'revenue' | 'orders';
+
 interface Stats {
   revenue: {
     today: number;
@@ -37,12 +40,34 @@ interface Stats {
     sales: number;
     orders: number;
   }>;
+  recentOrders: Array<{
+    id: string;
+    createdAt: string;
+    status: string;
+    totalTTC: number;
+    users: {
+      email: string | null;
+      name: string | null;
+    } | null;
+  }>;
+  dailyRevenue: Array<{
+    date: string;
+    label: string;
+    total: number;
+    orders: number;
+  }>;
+  statusBreakdown: Array<{
+    status: string;
+    count: number;
+  }>;
 }
 
 export default function AdminDashboard() {
   const { permissions } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [period, setPeriod] = useState<Period>('month');
+  const [chartMode, setChartMode] = useState<ChartMode>('revenue');
 
   useEffect(() => {
     async function fetchStats() {
@@ -81,12 +106,55 @@ export default function AdminDashboard() {
     );
   }
 
+  const revenueByPeriod =
+    period === 'today'
+      ? stats.revenue.today
+      : period === 'week'
+      ? stats.revenue.week
+      : stats.revenue.month;
+
+  const ordersByPeriod =
+    period === 'today'
+      ? stats.orders.today
+      : period === 'week'
+      ? stats.orders.week
+      : stats.orders.month;
+
+  const chartData = stats.dailyRevenue;
+  const maxChartValue = chartData.reduce((max, day) => {
+    const value = chartMode === 'revenue' ? day.total : day.orders;
+    return value > max ? value : max;
+  }, 0);
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+          <p className="text-gray-600 mt-1">Vue d'ensemble de votre activité</p>
+        </div>
+        {/* Sélecteur de période pour les KPIs */}
+        <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1 text-xs md:text-sm">
+          {[
+            { key: 'today', label: "Aujourd'hui" },
+            { key: 'week', label: '7 derniers jours' },
+            { key: 'month', label: '30 derniers jours' },
+          ].map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              onClick={() => setPeriod(option.key as Period)}
+              className={`px-3 py-1 rounded-md transition-colors ${
+                period === option.key
+                  ? 'bg-violet-electric text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -95,9 +163,9 @@ export default function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Revenus Total</p>
+                <p className="text-sm font-medium text-gray-600">Revenus</p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {(stats.revenue.month / 100).toLocaleString('fr-FR', {
+                  {(revenueByPeriod / 100).toLocaleString('fr-FR', {
                     style: 'currency',
                     currency: 'EUR',
                   })}
@@ -108,7 +176,11 @@ export default function AdminDashboard() {
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Ce mois
+              {period === 'today'
+                ? "Aujourd'hui"
+                : period === 'week'
+                ? '7 derniers jours'
+                : '30 derniers jours'}
             </p>
           </CardContent>
         </Card>
@@ -119,7 +191,7 @@ export default function AdminDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Commandes</p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {stats.orders.month}
+                  {ordersByPeriod}
                 </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
@@ -223,36 +295,39 @@ export default function AdminDashboard() {
               Commandes Récentes
             </h3>
             <div className="space-y-3">
-              {stats.topProducts.slice(0, 5).map((item, i) => (
+              {stats.recentOrders.map((order) => (
                 <div
-                  key={item.productId || i}
+                  key={order.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {typeof item.product?.name === 'object' 
-                        ? item.product.name.fr || item.product.name.en || 'Produit'
-                        : item.product?.name || 'Produit'}
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-900 truncate">
+                      {order.users?.name || order.users?.email || 'Client inconnu'}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      {item.sales} vente{item.sales > 1 ? 's' : ''}
+                    <p className="text-xs text-gray-500">
+                      {new Date(order.createdAt).toLocaleString('fr-FR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}{' '}
+                      · {order.status}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-gray-900">
-                      {item.product?.priceHT 
-                        ? ((item.product.priceHT * item.sales) / 100).toLocaleString('fr-FR', {
-                            style: 'currency',
-                            currency: 'EUR',
-                          })
-                        : 'N/A'}
+                      {(order.totalTTC / 100).toLocaleString('fr-FR', {
+                        style: 'currency',
+                        currency: 'EUR',
+                      })}
                     </p>
                   </div>
                 </div>
               ))}
-              {stats.topProducts.length === 0 && (
+              {stats.recentOrders.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">
-                  Aucune donnée disponible
+                  Aucune commande récente
                 </p>
               )}
             </div>
@@ -262,6 +337,192 @@ export default function AdminDashboard() {
             >
               Voir toutes les commandes →
             </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Graphiques & Diagrammes */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Graphique des revenus / commandes (30 jours) */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {chartMode === 'revenue'
+                    ? 'Évolution des revenus (30 jours)'
+                    : 'Évolution des commandes (30 jours)'}
+                </h3>
+                <p className="text-xs text-gray-500">
+                  {chartMode === 'revenue'
+                    ? 'Somme des commandes payées / livrées, en euros.'
+                    : 'Nombre de commandes créées par jour.'}
+                </p>
+              </div>
+              <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1 text-[11px] md:text-xs">
+                <button
+                  type="button"
+                  onClick={() => setChartMode('revenue')}
+                  className={`px-2 py-0.5 rounded-md transition-colors ${
+                    chartMode === 'revenue'
+                      ? 'bg-violet-electric text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  CA
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setChartMode('orders')}
+                  className={`px-2 py-0.5 rounded-md transition-colors ${
+                    chartMode === 'orders'
+                      ? 'bg-violet-electric text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  Cmdes
+                </button>
+              </div>
+            </div>
+            {chartData.length === 0 || maxChartValue === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-8">
+                Pas encore de données suffisantes pour afficher le graphique.
+              </p>
+            ) : (
+              <div className="h-48 w-full">
+                <svg
+                  viewBox="0 0 100 40"
+                  preserveAspectRatio="none"
+                  className="w-full h-full text-violet-electric"
+                >
+                  {/* Ligne de base */}
+                  <line
+                    x1="0"
+                    y1="35"
+                    x2="100"
+                    y2="35"
+                    stroke="#E5E7EB"
+                    strokeWidth="0.5"
+                  />
+                  {/* Polyline des revenus */}
+                  <polyline
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    points={chartData
+                      .map((day, index) => {
+                        const x =
+                          chartData.length === 1
+                            ? 50
+                            : (index / (chartData.length - 1)) * 100;
+                        const value =
+                          chartMode === 'revenue' ? day.total : day.orders;
+                        const ratio = value / maxChartValue;
+                        const y = 35 - ratio * 25; // marge haute
+                        return `${x},${y}`;
+                      })
+                      .join(' ')}
+                  />
+                  {/* Points */}
+                  {chartData.map((day, index) => {
+                    const x =
+                      chartData.length === 1
+                        ? 50
+                        : (index / (chartData.length - 1)) * 100;
+                    const value =
+                      chartMode === 'revenue' ? day.total : day.orders;
+                    const ratio = value / maxChartValue;
+                    const y = 35 - ratio * 25;
+                    return (
+                      <circle
+                        key={day.date}
+                        cx={x}
+                        cy={y}
+                        r={0.8}
+                        fill="currentColor"
+                      />
+                    );
+                  })}
+                </svg>
+                {/* Légende simple */}
+                <div className="mt-3 flex justify-between text-[10px] text-gray-500">
+                  <span>{chartData[0].label}</span>
+                  <span>{chartData[Math.floor(chartData.length / 2)].label}</span>
+                  <span>{chartData[chartData.length - 1].label}</span>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Diagramme des statuts de commandes */}
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Répartition des statuts de commandes
+            </h3>
+            {stats.statusBreakdown.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-8">
+                Aucune commande pour le moment.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {(() => {
+                  const total = stats.statusBreakdown.reduce(
+                    (sum, s) => sum + s.count,
+                    0
+                  );
+                  const max = stats.statusBreakdown.reduce(
+                    (max, s) => (s.count > max ? s.count : max),
+                    0
+                  );
+                  const labels: Record<string, string> = {
+                    PENDING: 'En attente',
+                    PAID: 'Payée',
+                    PROCESSING: 'En traitement',
+                    SHIPPED: 'Expédiée',
+                    DELIVERED: 'Livrée',
+                    CANCELLED: 'Annulée',
+                    REFUNDED: 'Remboursée',
+                  };
+                  const colors: Record<string, string> = {
+                    PENDING: 'bg-yellow-400',
+                    PAID: 'bg-blue-500',
+                    PROCESSING: 'bg-purple-500',
+                    SHIPPED: 'bg-indigo-500',
+                    DELIVERED: 'bg-green-500',
+                    CANCELLED: 'bg-red-500',
+                    REFUNDED: 'bg-gray-500',
+                  };
+
+                  return stats.statusBreakdown.map((item) => {
+                    const percent = total > 0 ? (item.count / total) * 100 : 0;
+                    const width = max > 0 ? (item.count / max) * 100 : 0;
+                    const label = labels[item.status] || item.status;
+                    const color = colors[item.status] || 'bg-gray-400';
+
+                    return (
+                      <div key={item.status} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-700">{label}</span>
+                          <span className="text-gray-500">
+                            {item.count} · {percent.toFixed(0)}%
+                          </span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className={`h-full ${color} transition-all`}
+                            style={{ width: `${width || 4}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
